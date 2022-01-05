@@ -26,13 +26,17 @@
   (when command
     (re-find (:pattern (get commands command)) (:message chat))))
 
+(defn default-response
+  [{:keys [message user]}]
+  (str "i'm sorry " user ", i don't understand the message: " message))
+
 (defn compute-response
   [chat command]
   (if command
     (let [matches (evaluate-chat-command chat command)
           respond-with (:response (get commands command))]
       (respond-with chat matches))
-    :default))
+    (default-response chat)))
 
 (defn dispatch-chat
   [chat]
