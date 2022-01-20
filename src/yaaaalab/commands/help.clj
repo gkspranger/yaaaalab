@@ -1,5 +1,5 @@
 (ns yaaaalab.commands.help
-  (:require [yaaaalab.core :refer [add-command]]))
+  (:require [yaaaalab.command :refer [add]]))
 
 (defn help
   {:group :help
@@ -15,5 +15,4 @@
   [{:keys [match] :as _chat}]
   (str "help *: " match))
 
-(add-command #'help)
-(add-command #'help-find)
+(add #'help #'help-find)
