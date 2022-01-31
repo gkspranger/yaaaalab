@@ -26,7 +26,7 @@
   (last (map add-command (conj commands command))))
 
 (comment
-  
+
   (let [command1 (with-meta (fn [_] "hello") {:pattern #"hello"
                                               :group :hello
                                               :description "this is the description"})
@@ -35,8 +35,17 @@
                                                  :description "this is the description 123"})]
     ;(add-command command)
     ;(add command1)
-    (add command1 command2)
+    (add command1 command2))
 
-    )
-  
+
+  (in-ns 'nsfun.hello)
+  (ns-publics 'nsfun.hello)
+
+  (require 'nsfun.hello)
+
+  (let [nss (ns-publics 'nsfun.hello)
+        funcs (vals (ns-publics 'nsfun.hello))]
+    (filter :pattern (map #(meta %) funcs)))
+
+
   )
