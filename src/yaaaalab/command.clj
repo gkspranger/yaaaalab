@@ -1,6 +1,8 @@
 (ns yaaaalab.command
   (:require [clojure.spec.alpha :as spec]
-            [clojure.test :as test]))
+            [clojure.test :as test]
+            [clojure.java.classpath :as cjc]
+            [clojure.tools.namespace.find :as ctnf]))
 
 (def commands (atom {}))
 (defn sorted-keys [] (sort (keys @commands)))
@@ -25,6 +27,17 @@
   [command & commands]
   (last (map add-command (conj commands command))))
 
+(defn all-namespaces
+  []
+  (concat
+   (ctnf/find-namespaces (cjc/system-classpath))
+   (ctnf/find-namespaces (cjc/classpath))))
+
+(defn command-namespaces
+  [namespaces]
+  (->> (filter #(re-matches #".+\.commands\..+" (str %)) namespaces)
+       (remove #(re-matches #".*\.test\..*" (str %)))))
+
 (comment
 
   (let [command1 (with-meta (fn [_] "hello") {:pattern #"hello"
@@ -46,6 +59,10 @@
   (let [nss (ns-publics 'nsfun.hello)
         funcs (vals (ns-publics 'nsfun.hello))]
     (filter :pattern (map #(meta %) funcs)))
+  
+  (all-namespaces)
+
+  (command-namespaces (all-namespaces))
 
 
   )

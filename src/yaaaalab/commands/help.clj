@@ -1,18 +1,15 @@
-(ns yaaaalab.commands.help
-  (:require [yaaaalab.command :refer [add]]))
+(ns yaaaalab.commands.help)
 
 (defn help
+  "help - list all available commands"
   {:group :help
-   :pattern #"help"
-   :description "help - list all available commands"}
+   :pattern #"help"}
   [{:keys [match] :as _chat}]
   (str "help: " match))
 
 (defn help-find
+  "help * - list all available commands that match a pattern"
   {:group :help
-   :pattern #"help\s(.+)"
-   :description "help * - list all available commands that match a pattern"}
+   :pattern #"help\s(.+)"}
   [{:keys [match] :as _chat}]
   (str "help *: " match))
-
-(add #'help #'help-find)
