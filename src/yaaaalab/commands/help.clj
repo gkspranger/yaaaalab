@@ -1,15 +1,23 @@
 (ns yaaaalab.commands.help)
 
+(defn skip1
+  [])
+
+(defn skip2
+  [])
+
 (defn help
   "help - list all available commands"
-  {:group :help
-   :pattern #"help"}
+  {:command? true
+   :group :help
+   :pattern #"^help$"}
   [{:keys [match] :as _chat}]
   (str "help: " match))
 
 (defn help-find
   "help * - list all available commands that match a pattern"
-  {:group :help
-   :pattern #"help\s(.+)"}
+  {:command? true
+   :group :help
+   :pattern #"^help\s(.+)$"}
   [{:keys [match] :as _chat}]
   (str "help *: " match))

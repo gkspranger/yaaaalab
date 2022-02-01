@@ -34,6 +34,15 @@
   nil)
 
 (comment
+
+  (let [_ (command/add-commands)]
+    (evaluate-chat {:message "help"}))
+
+  (let [_ (command/add-commands)]
+    (evaluate-chat {:message "help me"}))
+  
+  (let [_ (command/add-commands)]
+    (evaluate-chat {:message "i will fail"}))
   
   )
 

@@ -1,17 +1,10 @@
 (ns yaaaalab.command
-  (:require [clojure.spec.alpha :as spec]
-            [clojure.test :as test]
-            [clojure.java.classpath :as cjc]
+  (:require [clojure.java.classpath :as cjc]
             [clojure.tools.namespace.find :as ctnf]))
 
 (def commands (atom {}))
 (defn sorted-keys [] (sort (keys @commands)))
 (defn fetch [command] (get @commands command))
-
-(spec/def ::command test/function?)
-(spec/def ::pattern spec/regex?)
-(spec/def ::group keyword?)
-(spec/def ::description string?)
 
 (defn add-command
   [command]
@@ -19,13 +12,9 @@
         pattern (:pattern command-meta)]
     (swap! commands assoc (str pattern)
            {:pattern pattern
-            :description (:description command-meta)
+            :description (:doc command-meta)
             :group (:group command-meta)
             :function command})))
-
-(defn add
-  [command & commands]
-  (last (map add-command (conj commands command))))
 
 (defn all-namespaces
   []
@@ -38,31 +27,38 @@
   (->> (filter #(re-matches #".+\.commands\..+" (str %)) namespaces)
        (remove #(re-matches #".*\.test\..*" (str %)))))
 
+(defn load-namespace
+  [namespace]
+  (try
+    (require namespace)
+    namespace
+    (catch Exception _)))
+
+(defn load-namespaces
+  [namespaces]
+  (reduce #(when (load-namespace %2) (conj %1 %2)) [] namespaces))
+
+(defn command?
+  [mapping]
+  (if (:command? (meta mapping))
+    true
+    false))
+
+(defn namespace-commands
+  [namespace]
+  (let [mappings (vals (ns-publics namespace))]
+    (filter command? mappings)))
+
+(defn add-commands
+  []
+  (let [loaded-command-namespaces (->> (all-namespaces)
+                                       (command-namespaces)
+                                       (load-namespaces))
+        commands (flatten (map namespace-commands loaded-command-namespaces))]
+    (last (map add-command commands))))
+
 (comment
-
-  (let [command1 (with-meta (fn [_] "hello") {:pattern #"hello"
-                                              :group :hello
-                                              :description "this is the description"})
-        command2 (with-meta (fn [_] "hello123") {:pattern #"hello123"
-                                                 :group :hello
-                                                 :description "this is the description 123"})]
-    ;(add-command command)
-    ;(add command1)
-    (add command1 command2))
-
-
-  (in-ns 'nsfun.hello)
-  (ns-publics 'nsfun.hello)
-
-  (require 'nsfun.hello)
-
-  (let [nss (ns-publics 'nsfun.hello)
-        funcs (vals (ns-publics 'nsfun.hello))]
-    (filter :pattern (map #(meta %) funcs)))
   
-  (all-namespaces)
-
-  (command-namespaces (all-namespaces))
-
+  (add-commands)
 
   )
