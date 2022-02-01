@@ -6,16 +6,6 @@
 (defn sorted-keys [] (sort (keys @commands)))
 (defn fetch [command] (get @commands command))
 
-(defn add-command
-  [command]
-  (let [command-meta (meta command)
-        pattern (:pattern command-meta)]
-    (swap! commands assoc (str pattern)
-           {:pattern pattern
-            :description (:doc command-meta)
-            :group (:group command-meta)
-            :function command})))
-
 (defn all-namespaces
   []
   (concat
@@ -48,6 +38,16 @@
   [namespace]
   (let [mappings (vals (ns-publics namespace))]
     (filter command? mappings)))
+
+(defn add-command
+  [command]
+  (let [command-meta (meta command)
+        pattern (:pattern command-meta)]
+    (swap! commands assoc (str pattern)
+           {:pattern pattern
+            :description (:doc command-meta)
+            :group (:group command-meta)
+            :function command})))
 
 (defn add-commands
   []
