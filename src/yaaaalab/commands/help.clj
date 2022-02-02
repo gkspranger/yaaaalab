@@ -1,11 +1,5 @@
 (ns yaaaalab.commands.help)
 
-(defn skip1
-  [])
-
-(defn skip2
-  [])
-
 (defn help
   "help - list all available commands"
   {:command? true

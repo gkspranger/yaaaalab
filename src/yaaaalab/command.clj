@@ -3,8 +3,8 @@
             [clojure.tools.namespace.find :as ctnf]))
 
 (def commands (atom {}))
-(defn sorted-keys [] (sort (keys @commands)))
-(defn fetch [command] (get @commands command))
+(defn ->sorted-command-keys [] (sort (keys @commands)))
+(defn get-command [command] (get @commands command))
 
 (defn all-namespaces
   []
@@ -12,7 +12,7 @@
    (ctnf/find-namespaces (cjc/system-classpath))
    (ctnf/find-namespaces (cjc/classpath))))
 
-(defn command-namespaces
+(defn get-command-namespaces
   [namespaces]
   (->> (filter #(re-matches #".+\.commands\..+" (str %)) namespaces)
        (remove #(re-matches #".*\.test\..*" (str %)))))
@@ -34,7 +34,7 @@
     true
     false))
 
-(defn namespace-commands
+(defn get-namespace-commands
   [namespace]
   (let [mappings (vals (ns-publics namespace))]
     (filter command? mappings)))
@@ -52,9 +52,9 @@
 (defn add-commands
   []
   (let [loaded-command-namespaces (->> (all-namespaces)
-                                       (command-namespaces)
+                                       (get-command-namespaces)
                                        (load-namespaces))
-        commands (flatten (map namespace-commands loaded-command-namespaces))]
+        commands (flatten (map get-namespace-commands loaded-command-namespaces))]
     (last (map add-command commands))))
 
 (comment
