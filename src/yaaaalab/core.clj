@@ -1,5 +1,6 @@
 (ns yaaaalab.core
-  (:require [yaaaalab.command :as command])
+  (:require [yaaaalab.command :as command]
+            [yaaaalab.adapters.shell :as shell])
   (:gen-class))
 
 (defn default-response
@@ -42,7 +43,8 @@
 
 (defn -main
   [& _args]
-  nil)
+  (command/add-commands)
+  (shell/adapter evaluate-chat))
 
 (comment
 
