@@ -1,5 +1,7 @@
 (ns yaaaalab.core
   (:require [yaaaalab.command :as command]
+            [yaaaalab.config :as config]
+            [clojure.string :as string]
             [yaaaalab.adapters.shell :as shell])
   (:gen-class))
 
@@ -19,7 +21,7 @@
   [chat command]
   (let [command-info (command/get-command command)]
     {:command command-info
-     :match (re-find (:pattern command-info) (:message chat))}))
+     :match (re-find (:pattern command-info) (:command-message chat))}))
 
 (defn command-pattern-match?
   [chat command]
@@ -37,14 +39,39 @@
 
 (defn evaluate-chat
   [chat]
+  (some->> (find-first-command-pattern-match chat)
+           (compute-response chat)
+           (assoc chat :response)))
+
+(defn command-message?
+  [chat]
+  (if (re-find (re-pattern (str "^" (:prefix config/config))) (:raw-message chat))
+    true
+    false))
+
+(defmulti evaluate-chat2 :next)
+(defmethod evaluate-chat2 :compute-and-attach-response
+  [chat]
   (->> (find-first-command-pattern-match chat)
        (compute-response chat)
        (assoc chat :response)))
+(defmethod evaluate-chat2 :default
+  [chat]
+  (let [prefix-pattern (re-pattern (str "^" (:prefix config/config)))
+        command-message? (if (re-find prefix-pattern (:raw-message chat))
+                           true
+                           false)]
+    (when command-message?
+      (evaluate-chat2 (assoc chat
+                             :command-message (string/replace (:raw-message chat)
+                                                              prefix-pattern
+                                                              "")
+                             :next :compute-and-attach-response)))))
 
 (defn -main
   [& _args]
   (command/add-commands)
-  (shell/adapter evaluate-chat))
+  (shell/adapter evaluate-chat2))
 
 (comment
 

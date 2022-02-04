@@ -2,7 +2,7 @@
 
 (defn ->chat
   [text]
-  {:message text
+  {:raw-message text
    :user "shell"})
 
 (defn adapter
