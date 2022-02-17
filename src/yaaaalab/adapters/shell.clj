@@ -2,13 +2,16 @@
 
 (defn ->chat
   [text]
-  {:raw-message text
-   :user "shell"})
+  {:text text
+   :user "shell"
+   :source "shell"})
 
 (defn adapter
-  [evaluate-chat]
+  [evaluate-message]
   (while true
     (print "=> ")
     (flush)
-    (let [response (:response (evaluate-chat (->chat (read-line))))]
-      (println (str ">> response: " response \newline)))))
+    (let [response (:response (evaluate-message (->chat (read-line))))]
+      (if response
+        (println (str ">> response: " response \newline))
+        (println)))))

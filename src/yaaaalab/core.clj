@@ -6,83 +6,72 @@
   (:gen-class))
 
 (defn default-response
-  [{:keys [message user]}]
+  [{:keys [text user]}]
   (str "I'm sorry " user ", I don't understand the message:" \newline
-       message))
+       text))
 
 (defn compute-response
-  [chat {:keys [command match] :as _command-pattern-match}]
+  [message {:keys [command match] :as _command-pattern-match}]
   (if match
-    (let [command-symbol (symbol (:function command))]
-      ((resolve command-symbol) (assoc chat :match match)))
-    (default-response chat)))
+    ((resolve (symbol (:function command))) (assoc message :match match))
+    (default-response message)))
+
+(defn command-prefix-pattern
+  []
+  (re-pattern (str "^" (:prefix config/config))))
 
 (defn ->command-pattern-match
-  [chat command]
-  (let [command-info (command/get-command command)]
+  [message command]
+  (let [command-info (command/get-command command)
+        command-text (string/replace (:text message) (command-prefix-pattern) "")]
     {:command command-info
-     :match (re-find (:pattern command-info) (:command-message chat))}))
+     :match (re-find (:pattern command-info) command-text)}))
 
 (defn command-pattern-match?
-  [chat command]
-  (if (:match (->command-pattern-match chat command))
+  [message command]
+  (if (:match (->command-pattern-match message command))
     true
     false))
 
 (defn find-first-command-pattern-match
-  ([chat] (find-first-command-pattern-match chat (command/->sorted-command-keys)))
-  ([chat [command & remaining-commands :as commands]]
+  ([message] (find-first-command-pattern-match message (command/->sorted-command-keys)))
+  ([message [command & remaining-commands :as commands]]
    (cond
      (empty? commands) nil
-     (command-pattern-match? chat command) (->command-pattern-match chat command)
-     :else (recur chat remaining-commands))))
-
-(defn evaluate-chat
-  [chat]
-  (some->> (find-first-command-pattern-match chat)
-           (compute-response chat)
-           (assoc chat :response)))
+     (command-pattern-match? message command) (->command-pattern-match message command)
+     :else (recur message remaining-commands))))
 
 (defn command-message?
-  [chat]
-  (if (re-find (re-pattern (str "^" (:prefix config/config))) (:raw-message chat))
+  [message]
+  (if (re-find (command-prefix-pattern) (:text message))
     true
     false))
 
-(defmulti evaluate-chat2 :next)
-(defmethod evaluate-chat2 :compute-and-attach-response
-  [chat]
-  (->> (find-first-command-pattern-match chat)
-       (compute-response chat)
-       (assoc chat :response)))
-(defmethod evaluate-chat2 :default
-  [chat]
-  (let [prefix-pattern (re-pattern (str "^" (:prefix config/config)))
-        command-message? (if (re-find prefix-pattern (:raw-message chat))
-                           true
-                           false)]
-    (when command-message?
-      (evaluate-chat2 (assoc chat
-                             :command-message (string/replace (:raw-message chat)
-                                                              prefix-pattern
-                                                              "")
-                             :next :compute-and-attach-response)))))
+(defn evaluate-message
+  [message]
+  (when (command-message? message)
+    (let [match (find-first-command-pattern-match message)
+          response (compute-response message match)]
+      (assoc message :response response))))
 
 (defn -main
   [& _args]
   (command/add-commands)
-  (shell/adapter evaluate-chat2))
+  (shell/adapter evaluate-message))
 
 (comment
 
   (let [_ (command/add-commands)]
-    (evaluate-chat {:message "help"}))
+    (evaluate-message {:text "!help"}))
 
   (let [_ (command/add-commands)]
-    (evaluate-chat {:message "help me"}))
+    (evaluate-message {:text "!help me"}))
   
   (let [_ (command/add-commands)]
-    (evaluate-chat {:message "i will fail"}))
+    (evaluate-message {:text "!i will fail"}))
+  
+  (let [_ (command/add-commands)]
+    (evaluate-message {:text "some random text"}))
   
 
   (let [_ (command/add-commands)]
