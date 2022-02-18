@@ -15,5 +15,5 @@
     (flush)
     (let [response (:response (evaluate-message (->chat (read-line))))]
       (if response
-        (println (str ">> response: " response \newline))
+        (println (str ">> " response \newline))
         (println)))))

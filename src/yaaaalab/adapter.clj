@@ -14,7 +14,8 @@
 (defn get-adapter-namespaces
   [namespaces]
   (->> (filter #(re-matches #".+\.adapters\..+" (str %)) namespaces)
-       (remove #(re-matches #".*\.test\..*" (str %)))))
+       (remove #(re-matches #".*\.test\..*" (str %)))
+       (remove #(re-matches #".*-test$" (str %)))))
 
 (defn load-namespace
   [namespace]
