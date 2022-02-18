@@ -1,29 +1,28 @@
 (ns yaaaalab.core
-  (:require [yaaaalab.command :as command]
+  (:require [yaaaalab.command :refer [->sorted-command-keys get-command
+                                      load-commands]]
             [yaaaalab.adapter :as adapter]
             [yaaaalab.config :as config]
-            [clojure.string :as string])
+            [clojure.string :as cs])
   (:gen-class))
 
-(defn default-response
-  [{:keys [text user]}]
-  (str "I'm sorry " user ", I don't understand the message:" \newline
+(defn default-command-response
+  [{:keys [user text]}]
+  (str "I'm sorry " user ", I don't understand the command:" \newline
        text))
 
-(defn compute-response
+(defn compute-command-response
   [message {:keys [command match] :as _command-pattern-match}]
   (if match
     ((:function command) (assoc message :match match))
-    (default-response message)))
+    (default-command-response message)))
 
-(defn command-prefix-pattern
-  []
-  (re-pattern (str "^" (:prefix config/config))))
+(def command-prefix-pattern (re-pattern (str "^" (:prefix config/config))))
 
 (defn ->command-pattern-match
   [message command]
-  (let [command-info (command/get-command command)
-        command-text (string/replace (:text message) (command-prefix-pattern) "")]
+  (let [command-info (get-command command)
+        command-text (cs/replace (:text message) command-prefix-pattern "")]
     {:command command-info
      :match (re-find (:pattern command-info) command-text)}))
 
@@ -34,7 +33,7 @@
     false))
 
 (defn find-first-command-pattern-match
-  ([message] (find-first-command-pattern-match message (command/->sorted-command-keys)))
+  ([message] (find-first-command-pattern-match message (->sorted-command-keys)))
   ([message [command & remaining-commands :as commands]]
    (cond
      (empty? commands) nil
@@ -43,44 +42,44 @@
 
 (defn command-message?
   [message]
-  (if (re-find (command-prefix-pattern) (:text message))
+  (if (re-find command-prefix-pattern (:text message))
     true
     false))
 
-(defn evaluate-message
+(defn evaluate-message-for-command
   [message]
   (when (command-message? message)
     (let [match (find-first-command-pattern-match message)
-          response (compute-response message match)]
+          response (compute-command-response message match)]
       (assoc message :response response))))
 
 (defn -main
   [& _args]
-  (command/load-commands)
+  (load-commands)
   (adapter/load-adapters)
   (as-> (:adapter config/config) v
     (adapter/get-adapter v)
     (:function v)
-    (v evaluate-message)))
+    (v {:command-handler evaluate-message-for-command})))
 
 (comment
 
-  (let [_ (command/load-commands)]
-    (evaluate-message {:text "!help"}))
+  (let [_ (load-commands)]
+    (evaluate-message-for-command {:text "!help"}))
 
-  (let [_ (command/load-commands)]
-    (evaluate-message {:text "!help me"}))
+  (let [_ (load-commands)]
+    (evaluate-message-for-command {:text "!help me"}))
   
-  (let [_ (command/load-commands)]
-    (evaluate-message {:text "!i will fail"}))
+  (let [_ (load-commands)]
+    (evaluate-message-for-command {:text "!i will fail"}))
   
-  (let [_ (command/load-commands)]
-    (evaluate-message {:text "some random text"}))
+  (let [_ (load-commands)]
+    (evaluate-message-for-command {:text "some random text"}))
   
-  (let [_ (command/load-commands)]
+  (let [_ (load-commands)]
     (find-first-command-pattern-match {:message "i will fail"}))
   
-  (let [_ (command/load-commands)]
+  (let [_ (load-commands)]
     (find-first-command-pattern-match {:message "help me"}))
   
   )

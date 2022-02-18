@@ -9,11 +9,12 @@
 (defn initialize
   {:adapter? true
    :moniker :shell}
-  [evaluate-message]
+  [evaluators]
   (while true
     (print "=> ")
     (flush)
-    (let [response (:response (evaluate-message (->chat (read-line))))]
+    (let [evaluate-message-for-command (:command-handler evaluators)
+          response (:response (evaluate-message-for-command (->chat (read-line))))]
       (if response
         (println (str ">> " response \newline))
         (println)))))
