@@ -27,7 +27,7 @@
             :group (:group command-meta)
             :function command})))
 
-(def get-namespace-command-mappings (partial y-namespace/get-namespace-resources
+(def get-namespace-command-mappings (partial y-namespace/get-namespace-mappings
                                              command?))
 
 (defn load-commands

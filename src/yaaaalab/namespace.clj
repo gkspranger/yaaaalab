@@ -19,7 +19,7 @@
   [namespaces]
   (reduce #(when (load-namespace %2) (conj %1 %2)) [] namespaces))
 
-(defn get-namespace-resources
+(defn get-namespace-mappings
   [filter-fn y-namespace]
   (let [mappings (vals (ns-publics y-namespace))]
     (filter filter-fn mappings)))

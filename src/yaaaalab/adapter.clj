@@ -22,7 +22,7 @@
     (swap! adapters assoc (:moniker adapter-meta)
            {:function adapter})))
 
-(def get-namespace-adapter-mappings (partial y-namespace/get-namespace-resources
+(def get-namespace-adapter-mappings (partial y-namespace/get-namespace-mappings
                                              adapter?))
 
 (defn load-adapters
