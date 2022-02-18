@@ -17,7 +17,7 @@
     true
     false))
 
-(defn add-command
+(defn load-command
   [command]
   (let [command-meta (meta command)
         pattern (:pattern command-meta)]
@@ -27,19 +27,20 @@
             :group (:group command-meta)
             :function command})))
 
-(def get-namespace-commands (partial y-namespace/get-namespace-resources
-                                     command?))
+(def get-namespace-command-mappings (partial y-namespace/get-namespace-resources
+                                             command?))
 
-(defn add-commands
+(defn load-commands
   []
   (let [loaded-command-namespaces (->> (y-namespace/all-namespaces)
                                        (get-command-namespaces)
                                        (y-namespace/load-namespaces))
-        commands (flatten (map get-namespace-commands loaded-command-namespaces))]
-    (last (map add-command commands))))
+        commands (flatten (map get-namespace-command-mappings
+                               loaded-command-namespaces))]
+    (last (map load-command commands))))
 
 (comment
   
-  (add-commands)
+  (load-commands)
 
   )

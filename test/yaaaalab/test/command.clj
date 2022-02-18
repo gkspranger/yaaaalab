@@ -22,5 +22,5 @@
   "it will add the supplied argument to the collection of available commands,
    and return the entirety of available commands"
   (let [test1-meta (select-keys (meta #'test1) [:group :pattern :description])]
-    (get (command/add-command #'test1) (str (:pattern test1-meta))) =>
+    (get (command/load-command #'test1) (str (:pattern test1-meta))) =>
     (contains test1-meta))))

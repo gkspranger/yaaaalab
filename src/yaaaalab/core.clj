@@ -56,8 +56,8 @@
 
 (defn -main
   [& _args]
-  (command/add-commands)
-  (adapter/add-adapters)
+  (command/load-commands)
+  (adapter/load-adapters)
   (as-> (:adapter config/config) v
     (adapter/get-adapter v)
     (:function v)
@@ -65,22 +65,22 @@
 
 (comment
 
-  (let [_ (command/add-commands)]
+  (let [_ (command/load-commands)]
     (evaluate-message {:text "!help"}))
 
-  (let [_ (command/add-commands)]
+  (let [_ (command/load-commands)]
     (evaluate-message {:text "!help me"}))
   
-  (let [_ (command/add-commands)]
+  (let [_ (command/load-commands)]
     (evaluate-message {:text "!i will fail"}))
   
-  (let [_ (command/add-commands)]
+  (let [_ (command/load-commands)]
     (evaluate-message {:text "some random text"}))
   
-  (let [_ (command/add-commands)]
+  (let [_ (command/load-commands)]
     (find-first-command-pattern-match {:message "i will fail"}))
   
-  (let [_ (command/add-commands)]
+  (let [_ (command/load-commands)]
     (find-first-command-pattern-match {:message "help me"}))
   
   )

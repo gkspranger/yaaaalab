@@ -16,25 +16,26 @@
     true
     false))
 
-(defn add-adapter
+(defn load-adapter
   [adapter]
   (let [adapter-meta (meta adapter)]
     (swap! adapters assoc (:moniker adapter-meta)
            {:function adapter})))
 
-(def get-namespace-adapters (partial y-namespace/get-namespace-resources
-                                     adapter?))
+(def get-namespace-adapter-mappings (partial y-namespace/get-namespace-resources
+                                             adapter?))
 
-(defn add-adapters
+(defn load-adapters
   []
   (let [loaded-adapter-namespaces (->> (y-namespace/all-namespaces)
                                        (get-adapter-namespaces)
                                        (y-namespace/load-namespaces))
-        adapters (flatten (map get-namespace-adapters loaded-adapter-namespaces))]
-    (last (map add-adapter adapters))))
+        adapters (flatten (map get-namespace-adapter-mappings
+                               loaded-adapter-namespaces))]
+    (last (map load-adapter adapters))))
 
 (comment
   
-  (add-adapters)
+  (load-adapters)
 
   )
