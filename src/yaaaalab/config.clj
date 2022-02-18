@@ -1,3 +1,4 @@
 (ns yaaaalab.config)
 
-(def config {:prefix "!"})
+(def config {:adapter :shell
+             :prefix "!"})

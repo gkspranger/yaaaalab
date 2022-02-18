@@ -13,7 +13,7 @@
 (defn compute-response
   [message {:keys [command match] :as _command-pattern-match}]
   (if match
-    ((resolve (symbol (:function command))) (assoc message :match match))
+    ((:function command) (assoc message :match match))
     (default-response message)))
 
 (defn command-prefix-pattern
@@ -58,7 +58,10 @@
   [& _args]
   (command/add-commands)
   (adapter/add-adapters)
-  ((:function (adapter/get-adapter :shell)) evaluate-message))
+  (as-> (:adapter config/config) v
+    (adapter/get-adapter v)
+    (:function v)
+    (v evaluate-message)))
 
 (comment
 
