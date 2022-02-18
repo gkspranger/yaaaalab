@@ -1,8 +1,8 @@
 (ns yaaaalab.core
   (:require [yaaaalab.command :refer [->sorted-command-keys get-command
                                       load-commands]]
-            [yaaaalab.adapter :as adapter]
-            [yaaaalab.config :as config]
+            [yaaaalab.adapter :refer [get-adapter load-adapters]]
+            [yaaaalab.config :refer [get-config]]
             [clojure.string :as cs])
   (:gen-class))
 
@@ -17,7 +17,7 @@
     ((:function command) (assoc message :match match))
     (default-command-response message)))
 
-(def command-prefix-pattern (re-pattern (str "^" (:prefix config/config))))
+(def command-prefix-pattern (re-pattern (str "^" (:prefix (get-config)))))
 
 (defn ->command-pattern-match
   [message command]
@@ -56,9 +56,9 @@
 (defn -main
   [& _args]
   (load-commands)
-  (adapter/load-adapters)
-  (as-> (:adapter config/config) v
-    (adapter/get-adapter v)
+  (load-adapters)
+  (as-> (:adapter (get-config)) v
+    (get-adapter v)
     (:function v)
     (v {:command-handler evaluate-message-for-command})))
 
