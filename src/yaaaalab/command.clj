@@ -27,13 +27,15 @@
             :group (:group command-meta)
             :function command})))
 
+(def get-namespace-commands (partial y-namespace/get-namespace-resources
+                                     command?))
+
 (defn add-commands
   []
   (let [loaded-command-namespaces (->> (y-namespace/all-namespaces)
                                        (get-command-namespaces)
                                        (y-namespace/load-namespaces))
-        commands (flatten (map #(y-namespace/get-namespace-resources % command?)
-                               loaded-command-namespaces))]
+        commands (flatten (map get-namespace-commands loaded-command-namespaces))]
     (last (map add-command commands))))
 
 (comment

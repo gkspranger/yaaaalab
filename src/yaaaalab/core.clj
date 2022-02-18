@@ -1,8 +1,8 @@
 (ns yaaaalab.core
   (:require [yaaaalab.command :as command]
+            [yaaaalab.adapter :as adapter]
             [yaaaalab.config :as config]
-            [clojure.string :as string]
-            [yaaaalab.adapters.shell :as shell])
+            [clojure.string :as string])
   (:gen-class))
 
 (defn default-response
@@ -57,7 +57,8 @@
 (defn -main
   [& _args]
   (command/add-commands)
-  (shell/initialize evaluate-message))
+  (adapter/add-adapters)
+  ((:function (adapter/get-adapter :shell)) evaluate-message))
 
 (comment
 

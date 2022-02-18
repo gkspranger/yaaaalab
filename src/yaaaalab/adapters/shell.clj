@@ -8,7 +8,7 @@
 
 (defn initialize
   {:adapter? true
-   :name :shell}
+   :moniker :shell}
   [evaluate-message]
   (while true
     (print "=> ")
