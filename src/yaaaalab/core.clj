@@ -57,7 +57,7 @@
 (defn -main
   [& _args]
   (command/add-commands)
-  (shell/adapter evaluate-message))
+  (shell/initialize evaluate-message))
 
 (comment
 
@@ -73,7 +73,6 @@
   (let [_ (command/add-commands)]
     (evaluate-message {:text "some random text"}))
   
-
   (let [_ (command/add-commands)]
     (find-first-command-pattern-match {:message "i will fail"}))
   

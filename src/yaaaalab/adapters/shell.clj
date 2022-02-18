@@ -6,7 +6,9 @@
    :user "shell"
    :source "shell"})
 
-(defn adapter
+(defn initialize
+  {:adapter? true
+   :name :shell}
   [evaluate-message]
   (while true
     (print "=> ")
