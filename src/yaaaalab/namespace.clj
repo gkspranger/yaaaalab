@@ -8,6 +8,13 @@
    (find-namespaces (system-classpath))
    (find-namespaces (classpath))))
 
+(defn filter-namespaces
+  [filter-fn namespaces]
+  (->> namespaces
+       filter-fn
+       (remove #(re-matches #".*\.test\..*" (str %)))
+       (remove #(re-matches #".*-test$" (str %)))))
+
 (defn load-namespace
   [y-namespace]
   (try

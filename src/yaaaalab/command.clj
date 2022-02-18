@@ -1,16 +1,19 @@
 (ns yaaaalab.command
-  (:require [yaaaalab.namespace :refer [all-namespaces get-namespace-mappings
-                                        load-namespaces]]))
+  (:require [yaaaalab.namespace
+             :refer [all-namespaces filter-namespaces
+                     get-namespace-mappings load-namespaces]]))
 
 (def commands (atom {}))
 (defn ->sorted-command-keys [] (sort (keys @commands)))
 (defn get-command [command] (get @commands command))
 
 (defn get-command-namespaces
-  [namespaces]
-  (->> (filter #(re-matches #".+\.commands\..+" (str %)) namespaces)
-       (remove #(re-matches #".*\.test\..*" (str %)))
-       (remove #(re-matches #".*-test$" (str %)))))
+  []
+  (filter-namespaces (fn
+                       [namespaces]
+                       (filter #(re-matches #".+\.commands\..+" (str %))
+                               namespaces))
+                     (all-namespaces)))
 
 (defn command?
   [mapping]
@@ -33,9 +36,7 @@
 
 (defn load-commands
   []
-  (let [loaded-command-namespaces (->> (all-namespaces)
-                                       (get-command-namespaces)
-                                       (load-namespaces))
+  (let [loaded-command-namespaces (load-namespaces (get-command-namespaces))
         commands (flatten (map get-namespace-command-mappings
                                loaded-command-namespaces))]
     (last (map load-command commands))))
