@@ -15,7 +15,8 @@
 (defn get-command-namespaces
   [namespaces]
   (->> (filter #(re-matches #".+\.commands\..+" (str %)) namespaces)
-       (remove #(re-matches #".*\.test\..*" (str %)))))
+       (remove #(re-matches #".*\.test\..*" (str %)))
+       (remove #(re-matches #".*-test$" (str %)))))
 
 (defn load-namespace
   [namespace]
