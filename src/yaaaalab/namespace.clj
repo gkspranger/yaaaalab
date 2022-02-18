@@ -1,12 +1,12 @@
 (ns yaaaalab.namespace
-  (:require [clojure.java.classpath :as cjc]
-            [clojure.tools.namespace.find :as ctnf]))
+  (:require [clojure.java.classpath :refer [classpath system-classpath]]
+            [clojure.tools.namespace.find :refer [find-namespaces]]))
 
 (defn all-namespaces
   []
   (concat
-   (ctnf/find-namespaces (cjc/system-classpath))
-   (ctnf/find-namespaces (cjc/classpath))))
+   (find-namespaces (system-classpath))
+   (find-namespaces (classpath))))
 
 (defn load-namespace
   [y-namespace]

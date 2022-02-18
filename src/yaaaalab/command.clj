@@ -1,5 +1,6 @@
 (ns yaaaalab.command
-  (:require [yaaaalab.namespace :as y-namespace]))
+  (:require [yaaaalab.namespace :refer [all-namespaces get-namespace-mappings
+                                        load-namespaces]]))
 
 (def commands (atom {}))
 (defn ->sorted-command-keys [] (sort (keys @commands)))
@@ -27,14 +28,14 @@
             :group (:group command-meta)
             :function command})))
 
-(def get-namespace-command-mappings (partial y-namespace/get-namespace-mappings
+(def get-namespace-command-mappings (partial get-namespace-mappings
                                              command?))
 
 (defn load-commands
   []
-  (let [loaded-command-namespaces (->> (y-namespace/all-namespaces)
+  (let [loaded-command-namespaces (->> (all-namespaces)
                                        (get-command-namespaces)
-                                       (y-namespace/load-namespaces))
+                                       (load-namespaces))
         commands (flatten (map get-namespace-command-mappings
                                loaded-command-namespaces))]
     (last (map load-command commands))))

@@ -1,5 +1,6 @@
 (ns yaaaalab.adapter
-  (:require [yaaaalab.namespace :as y-namespace]))
+  (:require [yaaaalab.namespace :refer [all-namespaces get-namespace-mappings
+                                        load-namespaces]]))
 
 (def adapters (atom {}))
 (defn get-adapter [adapter] (get @adapters adapter))
@@ -22,14 +23,14 @@
     (swap! adapters assoc (:moniker adapter-meta)
            {:function adapter})))
 
-(def get-namespace-adapter-mappings (partial y-namespace/get-namespace-mappings
+(def get-namespace-adapter-mappings (partial get-namespace-mappings
                                              adapter?))
 
 (defn load-adapters
   []
-  (let [loaded-adapter-namespaces (->> (y-namespace/all-namespaces)
+  (let [loaded-adapter-namespaces (->> (all-namespaces)
                                        (get-adapter-namespaces)
-                                       (y-namespace/load-namespaces))
+                                       (load-namespaces))
         adapters (flatten (map get-namespace-adapter-mappings
                                loaded-adapter-namespaces))]
     (last (map load-adapter adapters))))
