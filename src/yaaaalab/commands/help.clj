@@ -5,13 +5,15 @@
   {:command? true
    :group :help
    :pattern #"^help$"}
-  [{:keys [match] :as _chat}]
-  (str "help: " match))
+  [{match :match
+    send-message :message-dispatcher :as _message}]
+  (send-message (str "help: " match)))
 
 (defn help-find
   "help * - list all available commands that match a pattern"
   {:command? true
    :group :help
    :pattern #"^help\s(.+)$"}
-  [{:keys [match] :as _chat}]
-  (str "help *: " match))
+  [{match :match
+    send-message :message-dispatcher :as _message}]
+  (send-message (str "help *: " match)))

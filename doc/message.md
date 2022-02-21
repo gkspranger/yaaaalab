@@ -2,6 +2,6 @@
 {
   :text "!help me"
   :user "gkspranger"
-  :source "slack"
+  :message-dispatcher #'yaaaalab.adapters.shell/send-message
 }
 ```

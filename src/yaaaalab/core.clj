@@ -6,15 +6,17 @@
             [clojure.string :as cs])
   (:gen-class))
 
-(defn default-command-response
+(defn ->default-command-response
   [{:keys [user text]}]
   (str "I'm sorry " user ", I don't understand the command: `" text "`"))
 
-(defn compute-command-response
-  [message {:keys [command match] :as _command-pattern-match}]
+(defn dispatch-command
+  [{send-message :message-dispatcher :as message}
+   {:keys [match]
+    {apply-command :function} :command :as _command-pattern-match}]
   (if match
-    ((:function command) (assoc message :match match))
-    (default-command-response message)))
+    (apply-command (assoc message :match match))
+    (send-message (->default-command-response message))))
 
 (def command-prefix-pattern (re-pattern (str "^" (:prefix (get-config)))))
 
@@ -48,14 +50,13 @@
 (defn evaluate-message-for-command
   [message]
   (when (command-message? message)
-    (let [match (find-first-command-pattern-match message)
-          response (compute-command-response message match)]
-      (assoc message :response response))))
+    (dispatch-command message
+                      (find-first-command-pattern-match message))))
 
 (defn -main
   [& _args]
-  (load-commands)
   (load-adapters)
+  (load-commands)
   (as-> (:adapter (get-config)) v
     (get-adapter v)
     (:function v)

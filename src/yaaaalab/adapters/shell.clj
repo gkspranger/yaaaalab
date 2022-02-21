@@ -1,14 +1,14 @@
 (ns yaaaalab.adapters.shell)
 
+(defn send-message
+  [text]
+  (println (str " bot> " text)))
+
 (defn ->chat
   [text]
   {:text text
    :user "user"
-   :source "shell"})
-
-(defn send-message
-  [text]
-  (println (str " bot> " text \newline)))
+   :message-dispatcher (var send-message)})
 
 (defn initialize
   {:adapter? true
@@ -17,8 +17,5 @@
   (while true
     (print "user> ")
     (flush)
-    (let [evaluate-message-for-command (:command-handler evaluators)
-          response (:response (evaluate-message-for-command (->chat (read-line))))]
-      (if response
-        (println (str " bot> " response \newline))
-        (println)))))
+    (let [evaluate-message-for-command (:command-handler evaluators)]
+      (evaluate-message-for-command (->chat (read-line))))))
