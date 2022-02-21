@@ -8,8 +8,7 @@
 
 (defn default-command-response
   [{:keys [user text]}]
-  (str "I'm sorry " user ", I don't understand the command:" \newline
-       text))
+  (str "I'm sorry " user ", I don't understand the command: `" text "`"))
 
 (defn compute-command-response
   [message {:keys [command match] :as _command-pattern-match}]
