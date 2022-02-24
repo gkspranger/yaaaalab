@@ -1,24 +1,29 @@
 (ns yaaaalab.adapters.shell)
 
 (def source "shell")
+(def channel "default")
 
-(defn reply-to-command
-  [text]
-  (println (str source "/bot> " text)))
+(defn send-message
+  [channel text]
+  (println (str source "/" channel "/bot> " text)))
+
+(def reply-to-command (partial send-message channel))
 
 (defn ->chat
   [text]
   {:text text
    :user "user"
    :source source
-   :response-dispatcher (var reply-to-command)})
+   :channel channel
+   :response-dispatcher (var reply-to-command)
+   :message-dispatcher (var send-message)})
 
 (defn initialize
   {:adapter? true
    :moniker :shell}
   [evaluators]
   (while true
-    (print (str source "/user> "))
+    (print (str source "/" channel "/user> "))
     (flush)
     (let [evaluate-message-for-command (:command-handler evaluators)]
       (evaluate-message-for-command (->chat (read-line))))))

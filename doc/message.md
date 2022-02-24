@@ -1,7 +1,10 @@
 ```clojure
 {
   :text "!help me"
-  :user "gkspranger"
+  :user "user"
+  :source "shell"
+  :channel "default"
   :response-dispatcher #'yaaaalab.adapters.shell/reply-to-command
+  :message-dispatcher #'yaaaalab.adapters.shell/send-message
 }
 ```
