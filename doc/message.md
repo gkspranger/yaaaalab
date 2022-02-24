@@ -2,6 +2,6 @@
 {
   :text "!help me"
   :user "gkspranger"
-  :message-dispatcher #'yaaaalab.adapters.shell/send-message
+  :response-dispatcher #'yaaaalab.adapters.shell/reply-to-command
 }
 ```

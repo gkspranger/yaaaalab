@@ -11,12 +11,12 @@
   (str "I'm sorry " user ", I don't understand the command: `" text "`"))
 
 (defn dispatch-command
-  [{send-message :message-dispatcher :as message}
+  [{reply :response-dispatcher :as message}
    {:keys [match]
     {apply-command :function} :command :as _command-pattern-match}]
   (if match
     (apply-command (assoc message :match match))
-    (send-message (->default-command-response message))))
+    (reply (->default-command-response message))))
 
 (def command-prefix-pattern (re-pattern (str "^" (:prefix (get-config)))))
 
