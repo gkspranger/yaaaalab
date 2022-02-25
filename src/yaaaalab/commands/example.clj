@@ -3,7 +3,7 @@
 (defn example
   "example - does nothing, just an example command"
   {:command? true
-   :group :help
+   :group :example
    :pattern #"^example$"}
   [{match :match
     reply :response-dispatcher
@@ -13,3 +13,19 @@
               "`) in the same channel it was invoked."))
   (send "some-other-channel"
         "I can also send messages to other channels."))
+
+(defn example2-1
+  "example2 - ..."
+  {:command? true
+   :group :example
+   :pattern #"^example2$"}
+  [{reply :response-dispatcher :as _message}]
+  (reply (str "example2-1")))
+
+(defn example2-2
+  "example2 - ..."
+  {:command? true
+   :group :example
+   :pattern #"^example2$"}
+  [{reply :response-dispatcher :as _message}]
+  (reply (str "example2-2")))

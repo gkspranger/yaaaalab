@@ -4,4 +4,4 @@
   {:listener? true
    :pattern #"^!(.+)"}
   [{match :match}]
-  (println (first match)))
+  (println (str "command: " (first match))))

@@ -31,6 +31,7 @@
 
 (defn load-adapters
   []
+  (reset! adapters {})
   (let [loaded-adapter-namespaces (load-namespaces (get-adapter-namespaces))
         adapters (flatten (map get-namespace-adapter-mappings
                                loaded-adapter-namespaces))]

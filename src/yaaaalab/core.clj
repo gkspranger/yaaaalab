@@ -1,8 +1,7 @@
 (ns yaaaalab.core
-  (:require [yaaaalab.command :refer [->sorted-command-keys get-command
-                                      load-commands]]
+  (:require [yaaaalab.command :refer [->commands load-commands]]
             [yaaaalab.adapter :refer [get-adapter load-adapters]]
-            [yaaaalab.listener :refer [->listener-vals load-listeners]]
+            [yaaaalab.listener :refer [->listeners load-listeners]]
             [yaaaalab.config :refer [get-config]]
             [clojure.string :as cs])
   (:gen-class))
@@ -19,14 +18,20 @@
     (apply-command (assoc message :match match))
     (reply (->default-command-response message))))
 
+(defn dispatch-listener
+  [message
+   {:keys [match]
+    {apply-listener :function} :listener :as _listener-pattern-match}]
+  (when match
+    (apply-listener (assoc message :match match))))
+
 (def command-prefix-pattern (re-pattern (str "^" (:prefix (get-config)))))
 
 (defn ->command-pattern-match
   [message command]
-  (let [command-info (get-command command)
-        command-text (cs/replace (:text message) command-prefix-pattern "")]
-    {:command command-info
-     :match (re-find (:pattern command-info) command-text)}))
+  {:command command
+   :match (re-find (:pattern command)
+                   (cs/replace (:text message) command-prefix-pattern ""))})
 
 (defn command-pattern-match?
   [message command]
@@ -45,17 +50,13 @@
     true
     false))
 
-(defn find-first-command-pattern-match
-  ([message] (find-first-command-pattern-match message (->sorted-command-keys)))
-  ([message [command & remaining-commands :as commands]]
-   (cond
-     (empty? commands) nil
-     (command-pattern-match? message command) (->command-pattern-match message command)
-     :else (recur message remaining-commands))))
+(defn find-command-pattern-matches
+  [message]
+  (filter #(command-pattern-match? message %) (->commands)))
 
 (defn find-listener-pattern-matches
   [message]
-  (filter #(listener-pattern-match? message %) (->listener-vals)))
+  (filter #(listener-pattern-match? message %) (->listeners)))
 
 (defn command-message?
   [message]
@@ -63,15 +64,21 @@
     true
     false))
 
-(defn evaluate-message-for-command
+(defn evaluate-message-for-commands
   [message]
   (when (command-message? message)
-    (dispatch-command message
-                      (find-first-command-pattern-match message))))
+    (let [commands (->> (find-command-pattern-matches message)
+                        (map #(->command-pattern-match message %)))]
+      (if (empty? commands)
+        (conj [] (dispatch-command message :empty))
+        (mapv #(dispatch-command message %) commands)))))
 
-(defn evaluate-message-for-listener
+(defn evaluate-message-for-listeners
   [message]
-  (find-listener-pattern-matches message))
+  (let [listeners (->> (find-listener-pattern-matches message)
+                       (map #(->listener-pattern-match message %)))]
+    (when-not (empty? listeners)
+      (mapv #(dispatch-listener message %) listeners))))
 
 (defn -main
   [& _args]
@@ -81,27 +88,37 @@
   (as-> (:adapter (get-config)) v
     (get-adapter v)
     (:function v)
-    (v {:command-handler evaluate-message-for-command
-        :listener-handler evaluate-message-for-listener})))
+    (v {:command-handler evaluate-message-for-commands
+        :listener-handler evaluate-message-for-listeners})))
 
 (comment
 
   (do (load-commands)
-      (evaluate-message-for-command {:text "!help"}))
+      (load-adapters)
+      (evaluate-message-for-commands {:text "!help"
+                                      :response-dispatcher (fn [msg] msg)}))
   
   (do (load-commands)
-      (evaluate-message-for-command {:text "!help me"}))
+      (load-adapters)
+      (evaluate-message-for-commands {:text "!example"
+                                      :response-dispatcher (fn [msg] msg)
+                                      :message-dispatcher (fn [_ msg] msg)}))
   
   (do (load-commands)
-      (evaluate-message-for-command {:text "!i will fail"}))
-  
+      (load-adapters)
+      (evaluate-message-for-commands {:text "!fail"
+                                      :response-dispatcher (fn [msg] msg)}))
+
   (do (load-commands)
-      (evaluate-message-for-command {:text "some random text"}))
+      (evaluate-message-for-commands {:text "some random text"}))
   
   (do (load-listeners)
-      (evaluate-message-for-listener {:text "some random text"}))
+      (evaluate-message-for-listeners {:text "some random text"}))
   
-  (->listener-vals)
+  (do (load-listeners)
+      (evaluate-message-for-listeners {:text "!some command"}))
+  
+  (->listeners)
   
   
   

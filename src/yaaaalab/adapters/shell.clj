@@ -25,5 +25,6 @@
   (while true
     (print (str source "/" channel "/user> "))
     (flush)
-    (let [evaluate-message-for-command (:command-handler evaluators)]
-      (evaluate-message-for-command (->chat (read-line))))))
+    (let [text (->chat (read-line))]
+      ((:command-handler evaluators) text)
+      ((:listener-handler evaluators) text))))

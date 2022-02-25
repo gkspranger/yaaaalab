@@ -3,8 +3,10 @@
              :refer [all-namespaces filter-namespaces
                      get-namespace-mappings load-namespaces]]))
 
-(def listeners (atom {}))
-(defn ->listener-vals [] (vals @listeners))
+(def listeners (atom []))
+(defn ->listeners
+  []
+  @listeners)
 
 (defn get-listener-namespaces
   []
@@ -24,15 +26,15 @@
   [listener]
   (let [listener-meta (meta listener)
         pattern (:pattern listener-meta)]
-    (swap! listeners assoc (str pattern)
-           {:pattern pattern
-            :function listener})))
+    (swap! listeners conj {:pattern pattern
+                           :function listener})))
 
 (def get-namespace-listener-mappings (partial get-namespace-mappings
                                               listener?))
 
 (defn load-listeners
   []
+  (reset! listeners [])
   (let [loaded-adapter-namespaces (load-namespaces (get-listener-namespaces))
         adapters (flatten (map get-namespace-listener-mappings
                                loaded-adapter-namespaces))]

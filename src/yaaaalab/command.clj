@@ -3,9 +3,10 @@
              :refer [all-namespaces filter-namespaces
                      get-namespace-mappings load-namespaces]]))
 
-(def commands (atom {}))
-(defn ->sorted-command-keys [] (sort (keys @commands)))
-(defn get-command [command] (get @commands command))
+(def commands (atom []))
+(defn ->commands
+  []
+  @commands)
 
 (defn get-command-namespaces
   []
@@ -23,19 +24,18 @@
 
 (defn load-command
   [command]
-  (let [command-meta (meta command)
-        pattern (:pattern command-meta)]
-    (swap! commands assoc (str pattern)
-           {:pattern pattern
-            :description (:doc command-meta)
-            :group (:group command-meta)
-            :function command})))
+  (let [command-meta (meta command)]
+    (swap! commands conj {:pattern (:pattern command-meta)
+                          :description (:doc command-meta)
+                          :group (:group command-meta)
+                          :function command})))
 
 (def get-namespace-command-mappings (partial get-namespace-mappings
                                              command?))
 
 (defn load-commands
   []
+  (reset! commands [])
   (let [loaded-command-namespaces (load-namespaces (get-command-namespaces))
         commands (flatten (map get-namespace-command-mappings
                                loaded-command-namespaces))]
