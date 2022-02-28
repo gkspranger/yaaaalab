@@ -10,11 +10,7 @@
 
 (defn get-listener-namespaces
   []
-  (filter-namespaces (fn
-                       [namespaces]
-                       (filter #(re-matches #".+\.listeners\..+" (str %))
-                               namespaces))
-                     (all-namespaces)))
+  (filter-namespaces #".+\.listeners\..+" (all-namespaces)))
 
 (defn listener?
   [mapping]
@@ -22,12 +18,10 @@
     true
     false))
 
-(defn load-adapter
+(defn load-listener
   [listener]
-  (let [listener-meta (meta listener)
-        pattern (:pattern listener-meta)]
-    (swap! listeners conj {:pattern pattern
-                           :function listener})))
+  (swap! listeners conj {:pattern (:pattern (meta listener))
+                         :function listener}))
 
 (def get-namespace-listener-mappings (partial get-namespace-mappings
                                               listener?))
@@ -35,10 +29,10 @@
 (defn load-listeners
   []
   (reset! listeners [])
-  (let [loaded-adapter-namespaces (load-namespaces (get-listener-namespaces))
-        adapters (flatten (map get-namespace-listener-mappings
-                               loaded-adapter-namespaces))]
-    (last (map load-adapter adapters))))
+  (let [loaded-listener-namespaces (load-namespaces (get-listener-namespaces))
+        listeners (flatten (map get-namespace-listener-mappings
+                                loaded-listener-namespaces))]
+    (last (map load-listener listeners))))
 
 (comment
   

@@ -8,11 +8,7 @@
 
 (defn get-adapter-namespaces
   []
-  (filter-namespaces (fn
-                       [namespaces]
-                       (filter #(re-matches #".+\.adapters\..+" (str %))
-                               namespaces))
-                     (all-namespaces)))
+  (filter-namespaces #".+\.adapters\..+" (all-namespaces)))
 
 (defn adapter?
   [mapping]

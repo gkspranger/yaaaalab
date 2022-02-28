@@ -10,11 +10,7 @@
 
 (defn get-command-namespaces
   []
-  (filter-namespaces (fn
-                       [namespaces]
-                       (filter #(re-matches #".+\.commands\..+" (str %))
-                               namespaces))
-                     (all-namespaces)))
+  (filter-namespaces #".+\.commands\..+" (all-namespaces)))
 
 (defn command?
   [mapping]

@@ -9,9 +9,9 @@
    (find-namespaces (classpath))))
 
 (defn filter-namespaces
-  [filter-fn namespaces]
+  [filter-pattern namespaces]
   (->> namespaces
-       filter-fn
+       (filter #(re-matches filter-pattern (str %)))
        (remove #(re-matches #".*\.test\..*" (str %)))
        (remove #(re-matches #".*-test$" (str %)))))
 

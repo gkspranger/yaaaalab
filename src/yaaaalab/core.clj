@@ -33,16 +33,16 @@
    :match (re-find (:pattern command)
                    (cs/replace (:text message) command-prefix-pattern ""))})
 
+(defn ->listener-pattern-match
+  [message listener]
+  {:listener listener
+   :match (re-find (:pattern listener) (:text message))})
+
 (defn command-pattern-match?
   [message command]
   (if (:match (->command-pattern-match message command))
     true
     false))
-
-(defn ->listener-pattern-match
-  [message listener]
-  {:listener listener
-   :match (re-find (:pattern listener) (:text message))})
 
 (defn listener-pattern-match?
   [message listener]
