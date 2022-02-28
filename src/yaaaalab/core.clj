@@ -3,7 +3,7 @@
             [yaaaalab.adapter :refer [get-adapter load-adapters]]
             [yaaaalab.listener :refer [->listeners load-listeners]]
             [yaaaalab.config :refer [get-config]]
-            [clojure.string :as cs])
+            [clojure.string :as string])
   (:gen-class))
 
 (defn ->default-command-response
@@ -31,7 +31,7 @@
   [message command]
   {:command command
    :match (re-find (:pattern command)
-                   (cs/replace (:text message) command-prefix-pattern ""))})
+                   (string/replace (:text message) command-prefix-pattern ""))})
 
 (defn ->listener-pattern-match
   [message listener]
