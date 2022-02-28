@@ -20,7 +20,7 @@
 
 (defn initialize
   {:adapter? true
-   :moniker :shell}
+   :id :shell}
   [evaluators]
   (while true
     (print (str source "/" channel "/user> "))

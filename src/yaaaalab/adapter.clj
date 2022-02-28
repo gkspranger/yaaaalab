@@ -19,7 +19,7 @@
 (defn load-adapter
   [adapter]
   (let [adapter-meta (meta adapter)]
-    (swap! adapters assoc (:moniker adapter-meta)
+    (swap! adapters assoc (:id adapter-meta)
            {:function adapter})))
 
 (def get-namespace-adapter-mappings (partial get-namespace-mappings
