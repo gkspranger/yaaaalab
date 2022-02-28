@@ -50,13 +50,9 @@
     true
     false))
 
-(defn find-command-pattern-matches
-  [message]
-  (filter #(command-pattern-match? message %) (->commands)))
-
-(defn find-listener-pattern-matches
-  [message]
-  (filter #(listener-pattern-match? message %) (->listeners)))
+(defn find-handler-pattern-matches
+  [message pattern-match-predicate handlers]
+  (filter #(pattern-match-predicate message %) handlers))
 
 (defn command-message?
   [message]
@@ -67,7 +63,9 @@
 (defn evaluate-message-for-commands
   [message]
   (when (command-message? message)
-    (let [commands (->> (find-command-pattern-matches message)
+    (let [commands (->> (find-handler-pattern-matches message
+                                                      command-pattern-match?
+                                                      (->commands))
                         (map #(->command-pattern-match message %)))]
       (if (empty? commands)
         (conj [] (dispatch-command message :empty))
@@ -75,7 +73,9 @@
 
 (defn evaluate-message-for-listeners
   [message]
-  (let [listeners (->> (find-listener-pattern-matches message)
+  (let [listeners (->> (find-handler-pattern-matches message
+                                                     listener-pattern-match?
+                                                     (->listeners))
                        (map #(->listener-pattern-match message %)))]
     (when-not (empty? listeners)
       (mapv #(dispatch-listener message %) listeners))))
@@ -86,8 +86,7 @@
   (load-commands)
   (load-listeners)
   (as-> (:adapter (get-config)) v
-    (get-adapter v)
-    (:function v)
+    (:function (get-adapter v))
     (v {:command-handler evaluate-message-for-commands
         :listener-handler evaluate-message-for-listeners})))
 
