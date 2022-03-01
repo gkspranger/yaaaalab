@@ -1,6 +1,6 @@
 (ns yaaaalab.core
   (:require [yaaaalab.command :refer [->commands load-commands]]
-            [yaaaalab.adapter :refer [get-adapter load-adapters]]
+            [yaaaalab.adapter :refer [->adapter load-adapters]]
             [yaaaalab.listener :refer [->listeners load-listeners]]
             [yaaaalab.config :refer [get-config]]
             [clojure.string :as string])
@@ -86,7 +86,7 @@
   (load-commands)
   (load-listeners)
   (as-> (:adapter (get-config)) v
-    (:function (get-adapter v))
+    (:function (->adapter v))
     (v {:command-handler evaluate-message-for-commands
         :listener-handler evaluate-message-for-listeners})))
 
@@ -96,13 +96,13 @@
       (load-adapters)
       (evaluate-message-for-commands {:text "!help"
                                       :response-dispatcher (fn [msg] msg)}))
-  
+
   (do (load-commands)
       (load-adapters)
       (evaluate-message-for-commands {:text "!example"
                                       :response-dispatcher (fn [msg] msg)
                                       :message-dispatcher (fn [_ msg] msg)}))
-  
+
   (do (load-commands)
       (load-adapters)
       (evaluate-message-for-commands {:text "!fail"
@@ -110,18 +110,12 @@
 
   (do (load-commands)
       (evaluate-message-for-commands {:text "some random text"}))
-  
+
   (do (load-listeners)
       (evaluate-message-for-listeners {:text "some random text"}))
-  
+
   (do (load-listeners)
       (evaluate-message-for-listeners {:text "!some command"}))
-  
-  (->listeners)
-  
-  
-  
-  
-  
-  )
+
+  (->listeners))
 

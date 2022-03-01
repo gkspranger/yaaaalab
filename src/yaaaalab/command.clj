@@ -46,7 +46,5 @@
     (last (map load-command commands))))
 
 (comment
-  
-  (load-commands)
 
-  )
+  (load-commands))

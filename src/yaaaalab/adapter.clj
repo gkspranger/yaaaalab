@@ -4,9 +4,10 @@
                      get-namespace-mappings load-namespaces]]))
 
 (def adapters (atom {}))
-(defn get-adapter [adapter] (get @adapters adapter))
 
-(defn get-adapter-namespaces
+(defn ->adapter [adapter] (get @adapters adapter))
+
+(defn ->adapter-namespaces
   []
   (filter-namespaces #".+\.adapters\..+" (all-namespaces)))
 
@@ -22,19 +23,17 @@
     (swap! adapters assoc (:id adapter-meta)
            {:function adapter})))
 
-(def get-namespace-adapter-mappings (partial get-namespace-mappings
-                                             adapter?))
+(def ->namespace-adapter-mappings (partial get-namespace-mappings
+                                           adapter?))
 
 (defn load-adapters
   []
   (reset! adapters {})
-  (let [loaded-adapter-namespaces (load-namespaces (get-adapter-namespaces))
-        adapters (flatten (map get-namespace-adapter-mappings
+  (let [loaded-adapter-namespaces (load-namespaces (->adapter-namespaces))
+        adapters (flatten (map ->namespace-adapter-mappings
                                loaded-adapter-namespaces))]
     (last (map load-adapter adapters))))
 
 (comment
-  
-  (load-adapters)
 
-  )
+  (load-adapters))
