@@ -1,7 +1,8 @@
 (ns yaaaalab.core
-  (:require [yaaaalab.command :refer [->commands load-commands]]
-            [yaaaalab.adapter :refer [->adapter load-adapters]]
+  (:require [yaaaalab.adapter :refer [->adapter load-adapters]]
+            [yaaaalab.command :refer [->commands load-commands]]
             [yaaaalab.listener :refer [->listeners load-listeners]]
+            [yaaaalab.view :refer [load-views]]
             [yaaaalab.config :refer [->config]]
             [clojure.string :as string])
   (:gen-class))
@@ -85,6 +86,7 @@
   (load-adapters)
   (load-commands)
   (load-listeners)
+  (load-views)
   (as-> (:adapter (->config)) v
     (:function (->adapter v))
     (v {:command-handler evaluate-message-for-commands
