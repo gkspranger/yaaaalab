@@ -16,7 +16,7 @@
           {}
           (->commands)))
 
-(defn get-command-namespaces
+(defn ->command-namespaces
   []
   (filter-namespaces #".+\.commands\..+" (all-namespaces)))
 
@@ -34,14 +34,14 @@
                           :group (:group command-meta)
                           :function command})))
 
-(def get-namespace-command-mappings (partial get-namespace-mappings
-                                             command?))
+(def ->namespace-command-mappings (partial get-namespace-mappings
+                                           command?))
 
 (defn load-commands
   []
   (reset! commands [])
-  (let [loaded-command-namespaces (load-namespaces (get-command-namespaces))
-        commands (flatten (map get-namespace-command-mappings
+  (let [loaded-command-namespaces (load-namespaces (->command-namespaces))
+        commands (flatten (map ->namespace-command-mappings
                                loaded-command-namespaces))]
     (last (map load-command commands))))
 
