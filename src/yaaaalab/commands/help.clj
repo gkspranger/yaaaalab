@@ -1,5 +1,6 @@
 (ns yaaaalab.commands.help
-  (:require [yaaaalab.command :refer [->command-descriptions-by-group]]))
+  (:require [yaaaalab.command :refer [->command-descriptions-by-group]]
+            [yaaaalab.view :refer [render]]))
 
 (defn help
   "help - list all available commands"
@@ -7,7 +8,7 @@
    :group :help
    :pattern #"^help$"}
   [{reply :response-dispatcher :as _message}]
-  (reply (str "help: " (->command-descriptions-by-group))))
+  (reply (render :help {:items (->command-descriptions-by-group)})))
 
 (defn help-search
   "help * - list all available commands that match the supplied pattern"
