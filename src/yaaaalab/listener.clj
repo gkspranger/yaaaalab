@@ -1,7 +1,7 @@
 (ns yaaaalab.listener
   (:require [yaaaalab.namespace
              :refer [all-namespaces filter-namespaces
-                     get-namespace-mappings load-namespaces]]))
+                     filter-namespace-mappings load-namespaces]]))
 
 (def listeners (atom []))
 
@@ -24,7 +24,7 @@
   (swap! listeners conj {:pattern (:pattern (meta listener))
                          :function listener}))
 
-(def ->namespace-listener-mappings (partial get-namespace-mappings
+(def ->namespace-listener-mappings (partial filter-namespace-mappings
                                             listener?))
 
 (defn load-listeners

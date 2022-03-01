@@ -1,7 +1,7 @@
 (ns yaaaalab.adapter
   (:require [yaaaalab.namespace
              :refer [all-namespaces filter-namespaces
-                     get-namespace-mappings load-namespaces]]))
+                     filter-namespace-mappings load-namespaces]]))
 
 (def adapters (atom {}))
 
@@ -23,7 +23,7 @@
     (swap! adapters assoc (:id adapter-meta)
            {:function adapter})))
 
-(def ->namespace-adapter-mappings (partial get-namespace-mappings
+(def ->namespace-adapter-mappings (partial filter-namespace-mappings
                                            adapter?))
 
 (defn load-adapters

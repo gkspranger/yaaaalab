@@ -1,7 +1,7 @@
 (ns yaaaalab.command
   (:require [yaaaalab.namespace
              :refer [all-namespaces filter-namespaces
-                     get-namespace-mappings load-namespaces]]))
+                     filter-namespace-mappings load-namespaces]]))
 
 (def commands (atom []))
 
@@ -34,7 +34,7 @@
                           :group (:group command-meta)
                           :function command})))
 
-(def ->namespace-command-mappings (partial get-namespace-mappings
+(def ->namespace-command-mappings (partial filter-namespace-mappings
                                            command?))
 
 (defn load-commands

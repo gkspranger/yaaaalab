@@ -26,7 +26,6 @@
   [namespaces]
   (reduce #(when (load-namespace %2) (conj %1 %2)) [] namespaces))
 
-(defn get-namespace-mappings
+(defn filter-namespace-mappings
   [filter-fn y-namespace]
-  (let [mappings (vals (ns-publics y-namespace))]
-    (filter filter-fn mappings)))
+  (filter filter-fn (vals (ns-publics y-namespace))))
