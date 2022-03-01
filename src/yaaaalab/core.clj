@@ -50,7 +50,7 @@
     true
     false))
 
-(defn find-handler-pattern-matches
+(defn filter-handler-pattern-matches
   [message pattern-match-predicate handlers]
   (filter #(pattern-match-predicate message %) handlers))
 
@@ -63,9 +63,9 @@
 (defn evaluate-message-for-commands
   [message]
   (when (command-message? message)
-    (let [commands (->> (find-handler-pattern-matches message
-                                                      command-pattern-match?
-                                                      (->commands))
+    (let [commands (->> (filter-handler-pattern-matches message
+                                                        command-pattern-match?
+                                                        (->commands))
                         (map #(->command-pattern-match message %)))]
       (if (empty? commands)
         (conj [] (dispatch-command message :empty))
@@ -73,9 +73,9 @@
 
 (defn evaluate-message-for-listeners
   [message]
-  (let [listeners (->> (find-handler-pattern-matches message
-                                                     listener-pattern-match?
-                                                     (->listeners))
+  (let [listeners (->> (filter-handler-pattern-matches message
+                                                       listener-pattern-match?
+                                                       (->listeners))
                        (map #(->listener-pattern-match message %)))]
     (when-not (empty? listeners)
       (mapv #(dispatch-listener message %) listeners))))
