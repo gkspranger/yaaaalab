@@ -4,9 +4,17 @@
                      get-namespace-mappings load-namespaces]]))
 
 (def commands (atom []))
+
 (defn ->commands
   []
   @commands)
+
+(defn ->command-descriptions-by-group
+  []
+  (reduce #(assoc %1 (:group %2) (sort (conj ((:group %2) %1)
+                                             (:description %2))))
+          {}
+          (->commands)))
 
 (defn get-command-namespaces
   []
