@@ -2,7 +2,7 @@
   (:require [yaaaalab.command :refer [->commands load-commands]]
             [yaaaalab.adapter :refer [->adapter load-adapters]]
             [yaaaalab.listener :refer [->listeners load-listeners]]
-            [yaaaalab.config :refer [get-config]]
+            [yaaaalab.config :refer [->config]]
             [clojure.string :as string])
   (:gen-class))
 
@@ -25,7 +25,7 @@
   (when match
     (apply-listener (assoc message :match match))))
 
-(def command-prefix-pattern (re-pattern (str "^" (:prefix (get-config)))))
+(def command-prefix-pattern (re-pattern (str "^" (:prefix (->config)))))
 
 (defn ->command-pattern-match
   [message command]
@@ -85,7 +85,7 @@
   (load-adapters)
   (load-commands)
   (load-listeners)
-  (as-> (:adapter (get-config)) v
+  (as-> (:adapter (->config)) v
     (:function (->adapter v))
     (v {:command-handler evaluate-message-for-commands
         :listener-handler evaluate-message-for-listeners})))
@@ -118,4 +118,3 @@
       (evaluate-message-for-listeners {:text "!some command"}))
 
   (->listeners))
-
