@@ -17,8 +17,8 @@
           (->commands)))
 
 (defn ->command-namespaces
-  []
-  (filter-namespaces #".+\.commands\..+" (all-namespaces)))
+  [namespaces]
+  (filter-namespaces #".+\.commands\..+" namespaces))
 
 (defn command?
   [mapping]
@@ -40,7 +40,8 @@
 (defn load-commands
   []
   (reset! commands [])
-  (let [loaded-command-namespaces (load-namespaces (->command-namespaces))
+  (let [command-namespaces (->command-namespaces (all-namespaces))
+        loaded-command-namespaces (load-namespaces command-namespaces)
         commands (flatten (map ->namespace-command-mappings
                                loaded-command-namespaces))]
     (last (map load-command commands))))

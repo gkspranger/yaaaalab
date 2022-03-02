@@ -10,8 +10,8 @@
   @listeners)
 
 (defn ->listener-namespaces
-  []
-  (filter-namespaces #".+\.listeners\..+" (all-namespaces)))
+  [namespaces]
+  (filter-namespaces #".+\.listeners\..+" namespaces))
 
 (defn listener?
   [mapping]
@@ -30,7 +30,8 @@
 (defn load-listeners
   []
   (reset! listeners [])
-  (let [loaded-listener-namespaces (load-namespaces (->listener-namespaces))
+  (let [listener-namespaces (->listener-namespaces (all-namespaces))
+        loaded-listener-namespaces (load-namespaces listener-namespaces)
         listeners (flatten (map ->namespace-listener-mappings
                                 loaded-listener-namespaces))]
     (last (map load-listener listeners))))

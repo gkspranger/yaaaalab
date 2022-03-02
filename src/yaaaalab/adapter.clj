@@ -8,8 +8,8 @@
 (defn ->adapter [adapter] (get @adapters adapter))
 
 (defn ->adapter-namespaces
-  []
-  (filter-namespaces #".+\.adapters\..+" (all-namespaces)))
+  [namespaces]
+  (filter-namespaces #".+\.adapters\..+" namespaces))
 
 (defn adapter?
   [mapping]
@@ -29,7 +29,8 @@
 (defn load-adapters
   []
   (reset! adapters {})
-  (let [loaded-adapter-namespaces (load-namespaces (->adapter-namespaces))
+  (let [adapter-namespaces (->adapter-namespaces (all-namespaces))
+        loaded-adapter-namespaces (load-namespaces adapter-namespaces)
         adapters (flatten (map ->namespace-adapter-mappings
                                loaded-adapter-namespaces))]
     (last (map load-adapter adapters))))

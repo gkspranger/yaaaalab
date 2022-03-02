@@ -16,8 +16,8 @@
       :else (fn [& _args] nil))))
 
 (defn ->view-namespaces
-  []
-  (filter-namespaces #".+\.views\..+" (all-namespaces)))
+  [namespaces]
+  (filter-namespaces #".+\.views\..+" namespaces))
 
 (defn view?
   [mapping]
@@ -39,7 +39,8 @@
 (defn load-views
   []
   (reset! views {})
-  (let [loaded-view-namespaces (load-namespaces (->view-namespaces))
+  (let [view-namespaces (->view-namespaces (all-namespaces))
+        loaded-view-namespaces (load-namespaces view-namespaces)
         views (flatten (map ->namespace-view-mappings
                             loaded-view-namespaces))]
     (last (map load-view views))))
