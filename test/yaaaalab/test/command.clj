@@ -57,3 +57,20 @@
                                      {:group :test1 :description :test2}
                                      {:group :test2 :description :test11}
                                      {:group :test2 :description :test22}])))
+
+(facts
+ "about load-command"
+ (let [command-to-load (with-meta [] {:pattern :pattern123
+                                      :doc :doc123
+                                      :group :group123})]
+   (with-state-changes [(before :facts (reset! command/commands []))
+                        (after :facts (reset! command/commands []))]
+     (fact
+      "it will add the provided command to the list of available commands
+       and return the entire list of available commands, which in this case
+       should only be the provided commands, given our setup/teardown of state
+       changes"
+      (command/load-command command-to-load) => [{:description :doc123
+                                                  :function []
+                                                  :group :group123
+                                                  :pattern :pattern123}]))))
