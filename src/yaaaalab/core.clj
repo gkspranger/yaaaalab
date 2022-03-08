@@ -7,24 +7,16 @@
             [clojure.string :as string])
   (:gen-class))
 
-(defn ->default-command-response
-  [{:keys [user text]}]
-  (str "I'm sorry " user ", I don't understand the command: `" text "`"))
-
-(defn dispatch-command
-  [{reply :response-dispatcher :as message}
-   {:keys [match]
-    {apply-command :function} :command :as _command-pattern-match}]
-  (if match
-    (apply-command (assoc message :match match))
-    (reply (->default-command-response message))))
-
-(defn dispatch-listener
+(defn dispatch-handler
   [message
    {:keys [match]
-    {apply-listener :function} :listener :as _listener-pattern-match}]
-  (when match
-    (apply-listener (assoc message :match match))))
+    {apply-command :function} :command
+    {apply-listener :function} :listener :as _handler-pattern-match}]
+  (let [message-w-match (assoc message :match match)]
+    (cond
+      (and match apply-command) (apply-command message-w-match)
+      (and match apply-listener) (apply-listener message-w-match)
+      :else nil)))
 
 (def command-prefix-pattern (re-pattern (str "^" (:prefix (->config)))))
 
@@ -64,22 +56,23 @@
 (defn evaluate-message-for-commands
   [message]
   (when (command-message? message)
-    (let [commands (->> (filter-handler-pattern-matches message
-                                                        command-pattern-match?
-                                                        (->commands))
-                        (map #(->command-pattern-match message %)))]
-      (if (empty? commands)
-        (conj [] (dispatch-command message :empty))
-        (mapv #(dispatch-command message %) commands)))))
+    (let [matched-commands (->>
+                            (filter-handler-pattern-matches
+                             message
+                             command-pattern-match?
+                             (->commands))
+                            (map #(->command-pattern-match message %)))]
+      (run! #(dispatch-handler message %) matched-commands))))
 
 (defn evaluate-message-for-listeners
   [message]
-  (let [listeners (->> (filter-handler-pattern-matches message
-                                                       listener-pattern-match?
-                                                       (->listeners))
-                       (map #(->listener-pattern-match message %)))]
-    (when-not (empty? listeners)
-      (mapv #(dispatch-listener message %) listeners))))
+  (let [matched-listeners (->>
+                           (filter-handler-pattern-matches
+                            message
+                            listener-pattern-match?
+                            (->listeners))
+                           (map #(->listener-pattern-match message %)))]
+    (run! #(dispatch-handler message %) matched-listeners)))
 
 (defn -main
   [& _args]
