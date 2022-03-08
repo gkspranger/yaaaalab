@@ -4,6 +4,21 @@
                                  after provided]]))
 
 (facts
+ "about ->adapter"
+ (fact
+  "it will return nil when the provided adapter id does not exist as a key
+   in the collection of available adapters"
+  (adapter/->adapter :i-do-not-exist) => nil)
+
+ (let [adapters {:test :is-found}]
+   (with-state-changes [(before :facts (reset! adapter/adapters adapters))
+                        (after :facts (reset! adapter/adapters {}))]
+     (fact
+      "it will return adapter info when the provided adapter id exists as a key
+       in the collection of available adapters"
+      (adapter/->adapter :test) => :is-found))))
+
+(facts
  "about ->adapter-namespaces"
  (fact
   "it will return an empty vector when no namespaces are provided"
