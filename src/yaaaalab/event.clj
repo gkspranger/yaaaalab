@@ -36,15 +36,10 @@
                              loaded-event-namespaces))]
     (last (map load-event events))))
 
-(defn dispatch-event
-  [data
-   {apply-event :function :as _event}]
-  (apply-event data))
-
 (defn emit
   [id data]
   (let [matched-events (filter #(= id (:id %)) (->events))]
-    (run! #(dispatch-event data %) matched-events)))
+    (run! #((:function %) data) matched-events)))
 
 (comment
 
