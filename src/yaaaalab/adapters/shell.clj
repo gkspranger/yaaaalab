@@ -9,7 +9,7 @@
 
 (def reply-to-command (partial send-message channel))
 
-(defn ->chat
+(defn ->message
   [text]
   {:text text
    :user "user"
@@ -21,10 +21,8 @@
 (defn initialize
   {:adapter? true
    :id :shell}
-  [evaluators]
+  [evaluate-message]
   (while true
     (print (str source "/" channel "/user> "))
     (flush)
-    (let [text (->chat (read-line))]
-      ((:command-handler evaluators) text)
-      ((:listener-handler evaluators) text))))
+    (evaluate-message (->message (read-line)))))
