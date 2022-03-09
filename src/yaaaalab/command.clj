@@ -46,13 +46,6 @@
                                loaded-command-namespaces))]
     (last (map load-command commands))))
 
-(defn dispatch-command
-  [message
-   {match :match
-    apply-command-function :function :as _command-pattern-match}]
-  (when match
-    (apply-command-function (assoc message :match match))))
-
 (comment
 
   (load-commands))
