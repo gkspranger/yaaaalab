@@ -1,8 +1,9 @@
 (ns yaaaalab.core
   (:require [yaaaalab.adapter :refer [->adapter load-adapters]]
             [yaaaalab.command :refer [->commands load-commands]]
+            [yaaaalab.event :refer [emit]]
             [yaaaalab.listener :refer [->listeners load-listeners]]
-            [yaaaalab.view :refer [load-views]]
+            [yaaaalab.view :refer [load-views render]]
             [yaaaalab.config :refer [->config]]
             [clojure.string :as string])
   (:gen-class))
@@ -49,6 +50,9 @@
   (load-views)
   (let [adapter (:adapter (->config))
         apply-adapter-function (:function (->adapter adapter))]
-    (apply-adapter-function (fn [message]
-                              (evaluate-message-for-commands message)
-                              (evaluate-message-for-listeners message)))))
+    (apply-adapter-function
+     {:message-evaluator (fn [message]
+                           (evaluate-message-for-commands message)
+                           (evaluate-message-for-listeners message))
+      :event-emitter emit
+      :view-renderer render})))

@@ -9,12 +9,3 @@
    :pattern #"^help$"}
   [{reply :response-dispatcher :as _message}]
   (reply (render :help {:items (->command-descriptions-by-group)})))
-
-(defn help-search
-  "help * - list all available commands that match the supplied pattern"
-  {:command? true
-   :group :help
-   :pattern #"^help\s(.+)$"}
-  [{match :match
-    reply :response-dispatcher :as _message}]
-  (reply (str "help *: " match)))

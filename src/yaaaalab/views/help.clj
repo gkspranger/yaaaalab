@@ -4,7 +4,7 @@
 (defn help
   {:view? true
    :id :help
-   :adapter :shell}
+   :adapter :default}
   [data]
   (parser/render
    (str "some long blurb about how this is help this bot will help them somehow" \newline

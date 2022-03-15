@@ -21,7 +21,7 @@
 (defn initialize
   {:adapter? true
    :id :shell}
-  [evaluate-message]
+  [{evaluate-message :message-evaluator}]
   (while true
     (print (str source "/" channel "/user> "))
     (flush)
