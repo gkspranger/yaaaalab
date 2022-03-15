@@ -4,7 +4,9 @@
   :user "user"
   :source "shell"
   :channel "default"
-  :response-dispatcher #'yaaaalab.adapters.shell/reply-to-command
-  :message-dispatcher #'yaaaalab.adapters.shell/send-message
+  :message-responder #'yaaaalab.adapters.shell/reply
+  :message-sender #'yaaaalab.adapters.shell/send
+  :event-emitter #'yaaaalab.event/emit
+  :view-renderer #'yaaaalab.view/render
 }
 ```
