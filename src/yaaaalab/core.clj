@@ -1,7 +1,7 @@
 (ns yaaaalab.core
   (:require [yaaaalab.adapter :refer [->adapter load-adapters]]
             [yaaaalab.command :refer [->commands load-commands]]
-            [yaaaalab.event :refer [emit]]
+            [yaaaalab.event :refer [emit load-events]]
             [yaaaalab.listener :refer [->listeners load-listeners]]
             [yaaaalab.view :refer [load-views render]]
             [yaaaalab.config :refer [->config]]
@@ -42,17 +42,20 @@
                                (remove #(empty? (:match %))))]
     (run! #(dispatch-handler message %) matched-listeners)))
 
+(def message-handlers
+  {:message-evaluator (fn [message]
+                        (evaluate-message-for-commands message)
+                        (evaluate-message-for-listeners message))
+   :event-emitter emit
+   :view-renderer render})
+
 (defn -main
   [& _args]
   (load-adapters)
   (load-commands)
+  (load-events)
   (load-listeners)
   (load-views)
   (let [adapter (:adapter (->config))
         apply-adapter-function (:function (->adapter adapter))]
-    (apply-adapter-function
-     {:message-evaluator (fn [message]
-                           (evaluate-message-for-commands message)
-                           (evaluate-message-for-listeners message))
-      :event-emitter emit
-      :view-renderer render})))
+    (apply-adapter-function message-handlers)))

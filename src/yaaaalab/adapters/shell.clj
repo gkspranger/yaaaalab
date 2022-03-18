@@ -7,22 +7,24 @@
   [channel text]
   (println (str source "/" channel "/bot> " text)))
 
-(def reply-to-command (partial send-message channel))
+(def reply-to-message (partial send-message channel))
 
-(defn ->message
-  [text]
-  {:text text
-   :user "user"
+(defn ->base-message
+  [{:keys [event-emitter view-renderer] :as _message-handlers}]
+  {:user "user"
    :source source
    :channel channel
-   :response-dispatcher (var reply-to-command)
-   :message-dispatcher (var send-message)})
+   :message-responder (var reply-to-message)
+   :message-sender (var send-message)
+   :event-emitter event-emitter
+   :view-renderer view-renderer})
 
 (defn initialize
   {:adapter? true
    :id :shell}
-  [{evaluate-message :message-evaluator}]
-  (while true
-    (print (str source "/" channel "/user> "))
-    (flush)
-    (evaluate-message (->message (read-line)))))
+  [{evaluate-message :message-evaluator :as message-handlers}]
+  (let [base-message (->base-message message-handlers)]
+    (while true
+      (print (str source "/" channel "/user> "))
+      (flush)
+      (evaluate-message (merge base-message {:text (read-line)})))))
