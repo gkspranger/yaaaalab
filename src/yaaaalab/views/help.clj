@@ -7,11 +7,11 @@
    :adapter :default}
   [data]
   (parser/render
-   (str "Displaying all known commands:" \newline
+   (str "Displaying all commands by command group." \newline
         "{% for group, commands in items %}"
-        "*{{ group }}*" \newline
+        "{{ group }}:" \newline
         "{% for command in commands %}"
-        " {{ command }}" \newline
+        "  {{ command }}" \newline
         "{% endfor %}"
         "{% endfor %}")
    data))
