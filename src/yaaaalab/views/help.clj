@@ -7,11 +7,11 @@
    :adapter :default}
   [data]
   (parser/render
-   (str "some long blurb about how this is help this bot will help them somehow" \newline
+   (str "Displaying all known commands:" \newline
         "{% for group, commands in items %}"
-        "{{group}}" \newline
+        "*{{ group }}*" \newline
         "{% for command in commands %}"
-        "  {{command}}" \newline
+        " {{ command }}" \newline
         "{% endfor %}"
         "{% endfor %}")
    data))

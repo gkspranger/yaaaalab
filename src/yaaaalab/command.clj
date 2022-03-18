@@ -1,7 +1,8 @@
 (ns yaaaalab.command
   (:require [yaaaalab.namespace
              :refer [all-namespaces filter-namespaces
-                     filter-namespace-mappings load-namespaces]]))
+                     filter-namespace-mappings load-namespaces]]
+            [yaaaalab.config :refer [->config]]))
 
 (def commands (atom []))
 
@@ -11,8 +12,11 @@
 
 (defn ->command-descriptions-by-group
   []
-  (reduce #(assoc %1 (:group %2) (sort (conj ((:group %2) %1)
-                                             (:description %2))))
+  (reduce #(let [group-name (name (:group %2))
+                 command-description (str (:prefix (->config))
+                                          (:description %2))]
+             (assoc %1 group-name (sort (conj (%1 group-name)
+                                              command-description))))
           {}
           (->commands)))
 

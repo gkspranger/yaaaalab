@@ -5,4 +5,5 @@
   {:listener? true
    :pattern #"(.*)"}
   [{match :match}]
-  (debug (str "message received: " (first match))))
+  (when-not (empty? (first match))
+    (debug (str "message received: " (first match)))))
