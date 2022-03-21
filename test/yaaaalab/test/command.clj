@@ -50,13 +50,15 @@
  (fact
   "it will return a hash-map that contains keys of every command group,
    where each key contains a collection of every related command's description;
-   a related command is one that shares the same command group"
-  (command/->command-descriptions-by-group) => {:test1 '(:test1 :test2)
-                                                :test2 '(:test11 :test22)}
-  (provided (command/->commands) => [{:group :test1 :description :test1}
-                                     {:group :test1 :description :test2}
-                                     {:group :test2 :description :test11}
-                                     {:group :test2 :description :test22}])))
+   a related command is one that shares the same command group;
+   command descriptions are prepended with the comand prefix << this sucks
+   i am turning the model into the view to make my life easier :("
+  (command/->command-descriptions-by-group) => {"test1" '("!test1" "!test2")
+                                                "test2" '("!test11" "!test22")}
+  (provided (command/->commands) => [{:group :test1 :description "test1"}
+                                     {:group :test1 :description "test2"}
+                                     {:group :test2 :description "test11"}
+                                     {:group :test2 :description "test22"}])))
 
 (facts
  "about load-command"
