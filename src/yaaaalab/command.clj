@@ -2,7 +2,8 @@
   (:require [yaaaalab.namespace
              :refer [all-namespaces filter-namespaces
                      filter-namespace-mappings load-namespaces]]
-            [yaaaalab.config :refer [->config]]))
+            [yaaaalab.config :refer [->config]]
+            [clojure.string :as string]))
 
 (def commands (atom []))
 
@@ -49,6 +50,21 @@
         commands (flatten (map ->namespace-command-mappings
                                loaded-command-namespaces))]
     (last (map load-command commands))))
+
+(def command-prefix-pattern (re-pattern (str "^" (:prefix (->config)))))
+
+(defn ->command-pattern-match
+  [{:keys [text] :as _message}
+   {:keys [pattern] :as command}]
+  (assoc command :match (re-find pattern
+                                 (string/replace text command-prefix-pattern ""))))
+
+(defn filter-matched-commands
+  [{:keys [text] :as message}]
+  (when (re-find command-prefix-pattern text)
+    (->> (->commands)
+         (map #(->command-pattern-match message %))
+         (remove #(empty? (:match %))))))
 
 (comment
 
