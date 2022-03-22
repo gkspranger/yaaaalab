@@ -2,15 +2,10 @@
   (:require [yaaaalab.adapter :refer [->adapter load-adapters]]
             [yaaaalab.command :refer [filter-matched-commands load-commands]]
             [yaaaalab.event :refer [emit load-events]]
-            [yaaaalab.listener :refer [->listeners load-listeners]]
+            [yaaaalab.listener :refer [filter-matched-listeners load-listeners]]
             [yaaaalab.view :refer [load-views render]]
             [yaaaalab.config :refer [->config]])
   (:gen-class))
-
-(defn ->listener-pattern-match
-  [{:keys [text] :as _message}
-   {:keys [pattern] :as listener}]
-  (assoc listener :match (re-find pattern text)))
 
 (defn dispatch-handler
   [message
@@ -24,10 +19,7 @@
 
 (defn evaluate-message-for-listeners
   [message]
-  (let [matched-listeners (->> (->listeners)
-                               (map #(->listener-pattern-match message %))
-                               (remove #(empty? (:match %))))]
-    (run! #(dispatch-handler message %) matched-listeners)))
+  (run! #(dispatch-handler message %) (filter-matched-listeners message)))
 
 (def message-handlers
   {:message-evaluator (fn [message]

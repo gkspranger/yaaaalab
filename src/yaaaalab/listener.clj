@@ -36,6 +36,17 @@
                                 loaded-listener-namespaces))]
     (last (map load-listener listeners))))
 
+(defn ->listener-pattern-match
+  [{:keys [text] :as _message}
+   {:keys [pattern] :as listener}]
+  (assoc listener :match (re-find pattern text)))
+
+(defn filter-matched-listeners
+  [message]
+  (->> (->listeners)
+       (map #(->listener-pattern-match message %))
+       (remove #(empty? (:match %)))))
+
 (comment
 
   (load-listeners))

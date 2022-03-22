@@ -56,8 +56,9 @@
 (defn ->command-pattern-match
   [{:keys [text] :as _message}
    {:keys [pattern] :as command}]
-  (assoc command :match (re-find pattern
-                                 (string/replace text command-prefix-pattern ""))))
+  (when-let [match (re-find pattern
+                            (string/replace text command-prefix-pattern ""))]
+    (assoc command :match match)))
 
 (defn filter-matched-commands
   [{:keys [text] :as message}]
