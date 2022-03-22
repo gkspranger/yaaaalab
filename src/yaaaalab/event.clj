@@ -43,8 +43,4 @@
 
 (comment
 
-  (load-events)
-
-  (emit :nothing {:match "hello"})
-
-  (emit :on-command {:match "hello"}))
+  (load-events))

@@ -39,13 +39,14 @@
 (defn ->listener-pattern-match
   [{:keys [text] :as _message}
    {:keys [pattern] :as listener}]
-  (assoc listener :match (re-find pattern text)))
+  (when-let [match (re-find pattern text)]
+    (assoc listener :match match)))
 
 (defn filter-matched-listeners
   [message]
   (->> (->listeners)
        (map #(->listener-pattern-match message %))
-       (remove #(empty? (:match %)))))
+       (remove empty?)))
 
 (comment
 

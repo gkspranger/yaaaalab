@@ -65,7 +65,7 @@
   (when (re-find command-prefix-pattern text)
     (->> (->commands)
          (map #(->command-pattern-match message %))
-         (remove #(empty? (:match %))))))
+         (remove empty?))))
 
 (comment
 
