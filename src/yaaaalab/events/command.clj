@@ -4,7 +4,7 @@
 (defn on-command
   {:event? true
    :id :on-command}
-  [{match :match}]
+  [{match :match :as _message}]
   (debug (str "command invoked: " (if (coll? match)
                                     (first match)
                                     match))))

@@ -4,18 +4,19 @@
             [yaaaalab.event :refer [emit load-events]]
             [yaaaalab.listener :refer [filter-matched-listeners load-listeners]]
             [yaaaalab.view :refer [load-views render]]
-            [yaaaalab.config :refer [->config]]
-            [taoensso.timbre :refer [error]])
+            [yaaaalab.config :refer [->config]])
   (:gen-class))
 
 (defn dispatch-handler
   [message
    {match :match
     apply-handler-function :function :as _handler-pattern-match}]
-  (try
-    (apply-handler-function (assoc message :match match))
-    (catch Exception err
-      (error err))))
+  (let [message-w-match (assoc message :match match)]
+    (try
+      (apply-handler-function message-w-match)
+      (catch Exception exception
+        (emit :on-handler-exception {:message message-w-match
+                                     :exception exception})))))
 
 (defn evaluate-message-for-commands
   [message]
