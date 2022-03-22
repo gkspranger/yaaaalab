@@ -1,5 +1,16 @@
 (ns yaaaalab.commands.help
-  (:require [yaaaalab.command :refer [->command-descriptions-by-group]]))
+  (:require [yaaaalab.config :refer [->config]]
+            [yaaaalab.command :refer [->commands]]))
+
+(defn ->command-descriptions-by-group
+  []
+  (reduce #(let [group-name (name (:group %2))
+                 command-description (str (:prefix (->config))
+                                          (:description %2))]
+             (assoc %1 group-name (sort (conj (%1 group-name)
+                                              command-description))))
+          {}
+          (->commands)))
 
 (defn help
   "help - list all available commands"
