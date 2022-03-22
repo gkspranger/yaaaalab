@@ -8,3 +8,9 @@
   (debug (str "command invoked: " (if (coll? match)
                                     (first match)
                                     match))))
+
+(defn on-unknown-command
+  {:event? true
+   :id :on-unknown-command}
+  [{text :text :as _message}]
+  (debug (str "unknown command invoked: " text)))

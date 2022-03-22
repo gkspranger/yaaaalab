@@ -20,7 +20,12 @@
 
 (defn evaluate-message-for-commands
   [message]
-  (run! #(dispatch-handler message %) (filter-matched-commands message)))
+  (let [matched-commands (filter-matched-commands message)
+        unknown-command? (and (coll? matched-commands)
+                              (empty? matched-commands))]
+    (if unknown-command?
+      (emit :on-unknown-command message)
+      (run! #(dispatch-handler message %) matched-commands))))
 
 (defn evaluate-message-for-listeners
   [message]
