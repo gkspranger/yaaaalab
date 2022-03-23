@@ -36,7 +36,7 @@
                                 loaded-listener-namespaces))]
     (last (map load-listener listeners))))
 
-(defn ->listener-pattern-match
+(defn ->listener-message-pattern-match
   [{:keys [text] :as _message}
    {:keys [pattern] :as listener}]
   (when-let [match (re-find pattern text)]
@@ -45,7 +45,7 @@
 (defn filter-matched-listeners
   [message]
   (->> (->listeners)
-       (map #(->listener-pattern-match message %))
+       (map #(->listener-message-pattern-match message %))
        (remove empty?)))
 
 (comment

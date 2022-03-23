@@ -43,7 +43,7 @@
 
 (def command-prefix-pattern (re-pattern (str "^" (:prefix (->config)))))
 
-(defn ->command-pattern-match
+(defn ->command-message-pattern-match
   [{:keys [text] :as _message}
    {:keys [pattern] :as command}]
   (when-let [match (re-find pattern
@@ -54,7 +54,7 @@
   [{:keys [text] :as message}]
   (when (re-find command-prefix-pattern text)
     (->> (->commands)
-         (map #(->command-pattern-match message %))
+         (map #(->command-message-pattern-match message %))
          (remove empty?))))
 
 (comment
