@@ -24,7 +24,7 @@
         unknown-command? (and (coll? matched-commands)
                               (empty? matched-commands))]
     (if unknown-command?
-      (emit :on-unknown-command message)
+      (emit :unknown-command message)
       (run! #(dispatch-handler message %) matched-commands))))
 
 (defn evaluate-message-for-listeners

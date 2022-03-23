@@ -24,4 +24,4 @@
     render :view-renderer :as message}]
   (send channel (str "Hi, " user "!"))
   (reply (render :help {:items (->command-descriptions-by-group)}))
-  (emit :on-command message))
+  (emit :known-command message))
