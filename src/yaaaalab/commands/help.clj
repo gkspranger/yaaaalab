@@ -20,8 +20,6 @@
   [{:keys [channel user]
     reply :message-responder
     send :message-sender
-    emit :event-emitter
-    render :view-renderer :as message}]
+    render :view-renderer :as _message}]
   (send channel (str "Hi, " user "!"))
-  (reply (render :help {:items (->command-descriptions-by-group)}))
-  (emit :known-command message))
+  (reply (render :help {:items (->command-descriptions-by-group)})))

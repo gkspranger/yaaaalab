@@ -11,21 +11,26 @@
   [message
    {match :match
     apply-handler-function :function :as _handler-pattern-match}]
-  (let [message-w-match (assoc message :match match)]
+  (let [message-w-match (assoc message :match match)
+        handler-type (:handler-type (meta message))
+        known-handler (keyword (str "known-" handler-type))
+        handler-exception (keyword (str handler-type "-exception"))]
     (try
       (apply-handler-function message-w-match)
+      (emit known-handler message)
       (catch Exception exception
-        (emit :on-handler-exception {:message message-w-match
-                                     :exception exception})))))
+        (emit handler-exception {:message message-w-match
+                                 :exception exception})))))
 
 (defn evaluate-message-for-commands
   [message]
   (let [matched-commands (filter-matched-commands message)
         unknown-command? (and (coll? matched-commands)
-                              (empty? matched-commands))]
+                              (empty? matched-commands))
+        message-w-handler-type (with-meta message {:handler-type "command"})]
     (if unknown-command?
       (emit :unknown-command message)
-      (run! #(dispatch-handler message %) matched-commands))))
+      (run! #(dispatch-handler message-w-handler-type %) matched-commands))))
 
 (defn evaluate-message-for-listeners
   [message]
