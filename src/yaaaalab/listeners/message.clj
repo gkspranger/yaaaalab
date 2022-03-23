@@ -1,9 +1,10 @@
 (ns yaaaalab.listeners.message
   (:require [taoensso.timbre :refer [debug]]))
 
-(defn log-message
+(defn log-non-empty-message
   {:listener? true
    :pattern #"(.*)"}
-  [{match :match :as _message}]
-  (when-not (empty? (first match))
-    (debug (str "message received: " (first match)))))
+  [{text :text :as message}]
+  (when-not (empty? text)
+    (debug (str "message received: "
+                (select-keys message [:channel :source :text :user])))))

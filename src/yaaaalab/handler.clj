@@ -23,7 +23,7 @@
          :as _handler-events} (->handler-events apply-handler-function)]
     (try
       (apply-handler-function message-w-match)
-      (emit known-handler message)
+      (emit known-handler message-w-match)
       (catch Exception exception
         (emit handler-exception {:message message-w-match
                                  :exception exception})))))
