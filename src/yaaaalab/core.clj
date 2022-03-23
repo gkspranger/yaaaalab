@@ -7,14 +7,24 @@
             [yaaaalab.config :refer [->config]])
   (:gen-class))
 
+(defn ->handler-function-events
+  [handler-function]
+  (let [handler-function-meta (meta handler-function)
+        handler-type (cond
+                       (:command? handler-function-meta) "command"
+                       (:listener? handler-function-meta) "listener")
+        known-handler (keyword (str "known-" handler-type))
+        handler-exception (keyword (str handler-type "-exception"))]
+    {:known-handler known-handler
+     :handler-exception handler-exception}))
+
 (defn dispatch-handler
   [message
    {match :match
-    apply-handler-function :function :as _handler-pattern-match}]
+    apply-handler-function :function :as _matched-handler}]
   (let [message-w-match (assoc message :match match)
-        handler-type (:handler-type (meta message))
-        known-handler (keyword (str "known-" handler-type))
-        handler-exception (keyword (str handler-type "-exception"))]
+        {:keys [known-handler handler-exception]
+         :as _handler-events} (->handler-function-events apply-handler-function)]
     (try
       (apply-handler-function message-w-match)
       (emit known-handler message)
@@ -26,11 +36,10 @@
   [message]
   (let [matched-commands (filter-matched-commands message)
         unknown-command? (and (coll? matched-commands)
-                              (empty? matched-commands))
-        message-w-handler-type (with-meta message {:handler-type "command"})]
+                              (empty? matched-commands))]
     (if unknown-command?
       (emit :unknown-command message)
-      (run! #(dispatch-handler message-w-handler-type %) matched-commands))))
+      (run! #(dispatch-handler message %) matched-commands))))
 
 (defn evaluate-message-for-listeners
   [message]
