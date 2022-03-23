@@ -1,7 +1,8 @@
 (ns yaaaalab.config)
 
 (def config {:adapter :shell
-             :prefix "!"})
+             :prefix "!"
+             :log-level :info})
 
 (defn ->config
   []

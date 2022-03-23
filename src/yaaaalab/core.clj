@@ -1,6 +1,7 @@
 (ns yaaaalab.core
   (:require [yaaaalab.adapter :refer [->adapter load-adapters]]
             [yaaaalab.command :refer [load-commands]]
+            [yaaaalab.logging :refer [load-logging]]
             [yaaaalab.event :refer [emit load-events]]
             [yaaaalab.listener :refer [load-listeners]]
             [yaaaalab.handler :refer [evaluate-message-for-commands
@@ -18,6 +19,7 @@
 
 (defn -main
   [& _args]
+  (load-logging)
   (load-adapters)
   (load-commands)
   (load-events)
