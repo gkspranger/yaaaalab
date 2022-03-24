@@ -36,10 +36,21 @@
                              loaded-event-namespaces))]
     (last (map load-event events))))
 
+(declare emit)
+
+(defn apply-event
+  [data
+   {apply-event-function :function :as _matched-event}]
+  (try
+    (apply-event-function data)
+    (catch Exception exception
+      (emit :event-exception {:data data
+                              :exception exception}))))
+
 (defn emit
   [id data]
   (let [matched-events (filter #(= id (:id %)) (->events))]
-    (run! #((:function %) data) matched-events)))
+    (run! #(apply-event data %) matched-events)))
 
 (comment
 
