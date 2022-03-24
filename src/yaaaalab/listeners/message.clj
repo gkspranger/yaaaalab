@@ -1,7 +1,7 @@
 (ns yaaaalab.listeners.message
   (:require [taoensso.timbre :refer [debug]]))
 
-(defn log-non-empty-message
+(defn non-empty-message
   {:listener? true
    :pattern #"(.*)"}
   [{text :text :as message}]

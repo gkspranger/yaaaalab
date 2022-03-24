@@ -1,4 +1,4 @@
-(ns yaaaalab.events.example)
+(ns yaaaalab.test.events.example)
 
 (defn on-example-event-exception
   {:event? true

@@ -1,9 +1,8 @@
-(ns yaaaalab.commands.example)
+(ns yaaaalab.test.commands.example)
 
 (defn example-command-exception
   "example command exception - throws an exception from a command"
   {:command? true
-   :example? true
    :group :example
    :pattern #"^example\s+command\s+exception$"}
   [_message]
@@ -12,8 +11,8 @@
 (defn example-event-exception
   "example event exception - throws an exception from an event"
   {:command? true
-   :example? true
    :group :example
    :pattern #"^example\sevent\s+exception$"}
-  [{emit :event-emitter :as _message}]
-  (emit :example-event-exception nil))
+  [{emit :event-emitter :as message}]
+  (emit :example-event-exception
+        (select-keys message [:channel :match :source :text :user])))
