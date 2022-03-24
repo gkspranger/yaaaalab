@@ -2,6 +2,7 @@
   :dependencies [[org.clojure/clojure "1.10.3"]
                  [com.taoensso/timbre "5.1.2"]
                  [selmer "1.12.50"]
+                 [com.grammarly/omniconf "0.4.3"]
                  [org.clojure/alpha.spec "99456b1856a6fd934e2c30b17920bd790dd81775"]]
   :repositories [["public-github" {:url "git://github.com"}]]
   :git-down {org.clojure/alpha.spec {:coordinates clojure/spec-alpha2}}

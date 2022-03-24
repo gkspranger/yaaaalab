@@ -7,7 +7,7 @@
             [yaaaalab.handler :refer [evaluate-message-for-commands
                                       evaluate-message-for-listeners]]
             [yaaaalab.view :refer [load-views render]]
-            [yaaaalab.config :refer [->config]])
+            [yaaaalab.config :refer [->config load-config]])
   (:gen-class))
 
 (def message-handlers
@@ -19,6 +19,7 @@
 
 (defn -main
   [& _args]
+  (load-config)
   (load-logging)
   (load-adapters)
   (load-commands)

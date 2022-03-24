@@ -41,18 +41,20 @@
                                loaded-command-namespaces))]
     (last (map load-command commands))))
 
-(def command-prefix-pattern (re-pattern (str "^" (:prefix (->config)))))
+(defn command-prefix-pattern
+  []
+  (re-pattern (str "^" (:prefix (->config)))))
 
 (defn ->command-message-pattern-match
   [{:keys [text] :as _message}
    {:keys [pattern] :as command}]
   (when-let [match (re-find pattern
-                            (string/replace text command-prefix-pattern ""))]
+                            (string/replace text (command-prefix-pattern) ""))]
     (assoc command :match match)))
 
 (defn filter-matched-commands
   [{:keys [text] :as message}]
-  (when (re-find command-prefix-pattern text)
+  (when (re-find (command-prefix-pattern) text)
     (->> (->commands)
          (map #(->command-message-pattern-match message %))
          (remove empty?))))
