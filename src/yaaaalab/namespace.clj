@@ -1,6 +1,7 @@
 (ns yaaaalab.namespace
   (:require [clojure.java.classpath :refer [classpath system-classpath]]
-            [clojure.tools.namespace.find :refer [find-namespaces]]))
+            [clojure.tools.namespace.find :refer [find-namespaces]]
+            [yaaaalab.config :refer [->config]]))
 
 (defn all-namespaces
   []
@@ -10,10 +11,14 @@
 
 (defn filter-namespaces
   [filter-pattern namespaces]
-  (->> namespaces
-       (filter #(re-matches filter-pattern (str %)))
-       (remove #(re-matches #".*\.test\..*" (str %)))
-       (remove #(re-matches #".*-test$" (str %)))))
+  (let [matched-namespaces (filter #(re-matches filter-pattern (str %))
+                                       namespaces)
+        matched-namespaces-wo-tests (->> matched-namespaces
+                                         (remove #(re-matches #".*\.test\..*" (str %)))
+                                         (remove #(re-matches #".*-test$" (str %))))]
+    (if (:include-examples (->config))
+      matched-namespaces
+      matched-namespaces-wo-tests)))
 
 (defn load-namespace
   [y-namespace]

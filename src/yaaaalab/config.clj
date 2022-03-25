@@ -3,7 +3,7 @@
 
 (def configs (atom {}))
 
-(defn load-config
+(defn load-configs
   []
   (cfg/define {:yaaaalab-adapter {:type :string
                                   :default "shell"}
