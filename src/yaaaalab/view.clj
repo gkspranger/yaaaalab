@@ -2,7 +2,8 @@
   (:require [yaaaalab.config :refer [->config]]
             [yaaaalab.namespace
              :refer [all-namespaces filter-namespaces
-                     filter-namespace-mappings load-namespaces]]))
+                     filter-namespace-mappings load-namespaces]]
+            [yaaaalab.event :refer [emit]]))
 
 (def views (atom {}))
 
@@ -45,9 +46,17 @@
                             loaded-view-namespaces))]
     (last (map load-view views))))
 
+(defn apply-view
+  [data apply-view-function]
+  (try
+    (apply-view-function data)
+    (catch Exception exception
+      (emit :view-exception {:data data
+                             :exception exception}))))
+
 (defn render
   [id data]
-  ((->view id) data))
+  (apply-view data (->view id)))
 
 (comment
 

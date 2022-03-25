@@ -8,11 +8,9 @@
   (let [handler-function-meta (meta handler-function)
         handler-type (cond
                        (:command? handler-function-meta) "command"
-                       (:listener? handler-function-meta) "listener")
-        known-handler (keyword (str "known-" handler-type))
-        handler-exception (keyword (str handler-type "-exception"))]
-    {:known-handler known-handler
-     :handler-exception handler-exception}))
+                       (:listener? handler-function-meta) "listener")]
+    {:known-handler (keyword (str "known-" handler-type))
+     :handler-exception (keyword (str handler-type "-exception"))}))
 
 (defn apply-handler
   [message
