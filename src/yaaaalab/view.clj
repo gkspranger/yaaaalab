@@ -13,8 +13,7 @@
         default-view (keyword (str (symbol view) "/default"))]
     (cond
       (adapter-view @views) (adapter-view @views)
-      (default-view @views) (default-view @views)
-      :else (fn [& _args] nil))))
+      (default-view @views) (default-view @views))))
 
 (defn ->view-namespaces
   [namespaces]
@@ -56,7 +55,9 @@
 
 (defn render
   [id data]
-  (apply-view data (->view id)))
+  (if-let [view (->view id)]
+    (apply-view data view)
+    (emit :unknown-view data)))
 
 (comment
 

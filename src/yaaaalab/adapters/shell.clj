@@ -5,7 +5,8 @@
 
 (defn send-message
   [channel text]
-  (println (str source "/" channel "/bot> " text)))
+  (when text
+    (println (str source "/" channel "/bot> " text))))
 
 (def reply-to-message (partial send-message channel))
 
