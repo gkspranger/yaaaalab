@@ -12,10 +12,18 @@
   "example event exception - throws an exception from an event"
   {:command? true
    :group :example
-   :pattern #"^example\sevent\s+exception$"}
+   :pattern #"^example\s+event\s+exception$"}
   [{emit :event-emitter :as message}]
   (emit :example-event-exception
         (select-keys message [:channel :match :source :text :user])))
+
+(defn example-event-unknown
+  "example event unknown - calls unknown event"
+  {:command? true
+   :group :example
+   :pattern #"^example\s+event\s+unknown$"}
+  [{emit :event-emitter :as message}]
+  (emit :example-event-unknown message))
 
 (defn example-view-exception
   "example view exception - throws an exception from a view"
