@@ -1,6 +1,12 @@
 (ns yaaaalab.events.view
   (:require [taoensso.timbre :refer [debug error]]))
 
+(defn on-known-view
+  {:event? true
+   :id :known-view}
+  [data]
+  (debug (str "known view invoked: " data)))
+
 (defn on-unknown-view
   {:event? true
    :id :unknown-view}

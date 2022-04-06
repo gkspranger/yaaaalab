@@ -48,7 +48,9 @@
 (defn apply-view
   [data apply-view-function]
   (try
-    (apply-view-function data)
+    (let [view (apply-view-function data)
+          _ (emit :known-view data)]
+      view)
     (catch Exception exception
       (emit :view-exception {:data data
                              :exception exception}))))
