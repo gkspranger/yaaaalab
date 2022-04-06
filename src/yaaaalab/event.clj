@@ -51,14 +51,17 @@
   [id data]
   (let [matched-events (filterv #(= id (:id %)) (->events))
         emitting-known-event-id? (= id :known-event)
+        emitting-unknown-event-id? (= id :unknown-event)
         scrubbed-data (dissoc data
                               :event-emitter :message-responder
                               :message-sender :view-renderer)]
     (cond
-      (and matched-events emitting-known-event-id?)
+      (and matched-events (or emitting-known-event-id?
+                              emitting-unknown-event-id?))
       (run! #(apply-event scrubbed-data %) matched-events)
-      matched-events (do (emit :known-event scrubbed-data)
-                         (run! #(apply-event scrubbed-data %) matched-events))
+      (not-empty matched-events)
+      (do (emit :known-event scrubbed-data)
+          (run! #(apply-event scrubbed-data %) matched-events))
       :else (emit :unknown-event data))))
 
 (comment
