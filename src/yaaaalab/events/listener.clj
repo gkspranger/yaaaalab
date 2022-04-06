@@ -5,13 +5,11 @@
   {:event? true
    :id :known-listener}
   [message]
-  (debug (str "known listener invoked: "
-              (select-keys message [:channel :match :source :text :user]))))
+  (debug (str "known listener invoked: " message)))
 
 (defn on-listener-exception
   {:event? true
    :id :listener-exception}
   [{:keys [exception message] :as _listener-message-exception}]
-  (error (str "listener exception thrown: "
-              (select-keys message [:channel :match :source :text :user])))
+  (error (str "listener exception thrown: " message))
   (error exception))

@@ -5,20 +5,17 @@
   {:event? true
    :id :known-command}
   [message]
-  (debug (str "known command invoked: "
-              (select-keys message [:channel :match :source :text :user]))))
+  (debug (str "known command invoked: " message)))
 
 (defn on-unknown-command
   {:event? true
    :id :unknown-command}
   [message]
-  (debug (str "unknown command invoked: "
-              (select-keys message [:channel :source :text :user]))))
+  (debug (str "unknown command invoked: " message)))
 
 (defn on-command-exception
   {:event? true
    :id :command-exception}
   [{:keys [exception message] :as _command-message-exception}]
-  (error (str "command exception thrown: "
-              (select-keys message [:channel :match :source :text :user])))
+  (error (str "command exception thrown: " message))
   (error exception))
