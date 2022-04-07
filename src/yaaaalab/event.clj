@@ -47,22 +47,37 @@
       (emit :event-exception {:data data
                               :exception exception}))))
 
+(defn polish-data
+  [id data]
+  (let [calling-event-id (:yaaaalab.event.id (meta data))]
+    (with-meta
+      (dissoc data
+              :event-emitter :message-responder
+              :message-sender :view-renderer)
+      {:yaaaalab.event.id (if calling-event-id
+                            calling-event-id
+                            id)})))
+
 (defn emit
   [id data]
   (let [matched-events (filterv #(= id (:id %)) (->events))
         emitting-known-event-id? (= id :known-event)
         emitting-unknown-event-id? (= id :unknown-event)
-        scrubbed-data (dissoc data
-                              :event-emitter :message-responder
-                              :message-sender :view-renderer)]
+        polished-data (polish-data id data)]
     (cond
-      (and matched-events (or emitting-known-event-id?
-                              emitting-unknown-event-id?))
-      (run! #(apply-event scrubbed-data %) matched-events)
+      ;; when non-empty matched event's id is either :known-event or :unknown-event,
+      ;; only apply event function to scrubbed data, thus avoiding circular reference
+      ;; in following condition that emits :known-event event with scrubbed data
+      (and (not-empty matched-events) (or emitting-known-event-id?
+                                          emitting-unknown-event-id?))
+      (run! #(apply-event polished-data %) matched-events)
+      ;; when non-empty matched events, emit :known-event event with scrubbed data
+      ;; and apply event function to scrubbed data
       (not-empty matched-events)
-      (do (emit :known-event scrubbed-data)
-          (run! #(apply-event scrubbed-data %) matched-events))
-      :else (emit :unknown-event data))))
+      (do (emit :known-event polished-data)
+          (run! #(apply-event polished-data %) matched-events))
+      ;; when empty matched events, emit :unknown-event event with scrubbed data
+      :else (emit :unknown-event polished-data))))
 
 (comment
 

@@ -5,17 +5,20 @@
   {:event? true
    :id :known-event}
   [data]
-  (debug (str "known event invoked: " data)))
+  (let [event-id (:yaaaalab.event.id (meta data))]
+    (debug (str "known event (" event-id ") invoked: ") data)))
 
 (defn on-unknown-event
   {:event? true
    :id :unknown-event}
   [data]
-  (debug (str "unknown event invoked: " data)))
+  (let [event-id (:yaaaalab.event.id (meta data))]
+    (debug (str "unknown event (" event-id ") invoked: ") data)))
 
 (defn on-event-exception
   {:event? true
    :id :event-exception}
   [{:keys [data exception] :as _event-exception}]
-  (error (str "event exception thrown: " data))
-  (error exception))
+  (let [event-id (:yaaaalab.event.id (meta data))]
+    (error (str "event (" event-id ") exception thrown: ") data)
+    (error exception)))
