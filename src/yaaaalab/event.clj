@@ -22,7 +22,7 @@
 (defn load-event
   [event]
   (swap! events conj {:yaaaalab.event.id (:yaaaalab.event.id (meta event))
-                      :function event}))
+                      :yaaaalab.event.function event}))
 
 (def ->namespace-event-mappings (partial filter-namespace-mappings
                                          event?))
@@ -40,7 +40,7 @@
 
 (defn apply-event
   [data
-   {apply-event-function :function :as _matched-event}]
+   {apply-event-function :yaaaalab.event.function :as _matched-event}]
   (try
     (apply-event-function data)
     (catch Exception exception
