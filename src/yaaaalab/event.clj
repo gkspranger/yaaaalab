@@ -47,37 +47,35 @@
       (emit :event-exception {:data data
                               :exception exception}))))
 
-(defn polish-event-data
+(defn ->data-w-ids
   [id data]
-  (let [calling-event-id (:yaaaalab.event.id (meta data))]
+  (let [parent-event-id (:yaaaalab.event.id (meta data))]
     (with-meta
-      (dissoc data
-              :event-emitter :message-responder
-              :message-sender :view-renderer)
-      {:yaaaalab.event.id (if calling-event-id
-                            calling-event-id
-                            id)})))
+      data
+      (merge {:yaaaalab.event.id id}
+             (when parent-event-id
+               {:yaaaalab.event.parent.id parent-event-id})))))
 
 (defn emit
   [id data]
   (let [matched-events (filter #(= id (:yaaaalab.event.id %)) (->events))
         emitting-known-event-id? (= id :known-event)
         emitting-unknown-event-id? (= id :unknown-event)
-        polished-data (polish-event-data id data)]
+        data-w-ids (->data-w-ids id data)]
     (cond
       ;; when non-empty matched event's id is either :known-event or :unknown-event,
-      ;; only apply event function to polished data, thus avoiding circular reference
-      ;; in following condition that emits :known-event event with polished data
+      ;; only apply event function to data, thus avoiding circular reference
+      ;; in following condition that emits :known-event event with data
       (and (not-empty matched-events) (or emitting-known-event-id?
                                           emitting-unknown-event-id?))
-      (run! #(apply-event polished-data %) matched-events)
-      ;; when non-empty matched events, emit :known-event event with polished data
-      ;; and apply event function to polished data
+      (run! #(apply-event data-w-ids %) matched-events)
+      ;; when non-empty matched events, emit :known-event event with data
+      ;; and apply event function to data
       (not-empty matched-events)
-      (do (emit :known-event polished-data)
-          (run! #(apply-event polished-data %) matched-events))
-      ;; when empty matched events, emit :unknown-event event with polished data
-      :else (emit :unknown-event polished-data))))
+      (do (emit :known-event data-w-ids)
+          (run! #(apply-event data-w-ids %) matched-events))
+      ;; when empty matched events, emit :unknown-event event with data
+      :else (emit :unknown-event data-w-ids))))
 
 (comment
 

@@ -25,6 +25,14 @@
   [{emit :event-emitter :as message}]
   (emit :example-event-unknown message))
 
+(defn example-event-nested
+  "example event nested - calls nested event"
+  {:command? true
+   :group :example
+   :pattern #"^example\s+event\s+nested$"}
+  [{emit :event-emitter :as message}]
+  (emit :example-event-nested message))
+
 (defn example-view-exception
   "example view exception - throws an exception from a view"
   {:command? true

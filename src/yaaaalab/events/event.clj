@@ -5,14 +5,14 @@
   {:yaaaalab.event.event? true
    :yaaaalab.event.id :known-event}
   [data]
-  (debug (str "known event (" (:yaaaalab.event.id (meta data)) ") invoked: ")
+  (debug (str "known event (" (:yaaaalab.event.parent.id (meta data)) ") invoked: ")
          data))
 
 (defn on-unknown-event
   {:yaaaalab.event.event? true
    :yaaaalab.event.id :unknown-event}
   [data]
-  (debug (str "unknown event (" (:yaaaalab.event.id (meta data)) ") invoked: ")
+  (debug (str "unknown event (" (:yaaaalab.event.parent.id (meta data)) ") invoked: ")
          data))
 
 (defn on-event-exception
