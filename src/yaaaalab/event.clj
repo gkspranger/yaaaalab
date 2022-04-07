@@ -15,13 +15,13 @@
 
 (defn event?
   [mapping]
-  (if (:event? (meta mapping))
+  (if (:yaaaalab.event.event? (meta mapping))
     true
     false))
 
 (defn load-event
   [event]
-  (swap! events conj {:id (:id (meta event))
+  (swap! events conj {:yaaaalab.event.id (:yaaaalab.event.id (meta event))
                       :function event}))
 
 (def ->namespace-event-mappings (partial filter-namespace-mappings
@@ -47,7 +47,7 @@
       (emit :event-exception {:data data
                               :exception exception}))))
 
-(defn polish-data
+(defn polish-event-data
   [id data]
   (let [calling-event-id (:yaaaalab.event.id (meta data))]
     (with-meta
@@ -60,23 +60,23 @@
 
 (defn emit
   [id data]
-  (let [matched-events (filterv #(= id (:id %)) (->events))
+  (let [matched-events (filter #(= id (:yaaaalab.event.id %)) (->events))
         emitting-known-event-id? (= id :known-event)
         emitting-unknown-event-id? (= id :unknown-event)
-        polished-data (polish-data id data)]
+        polished-data (polish-event-data id data)]
     (cond
       ;; when non-empty matched event's id is either :known-event or :unknown-event,
-      ;; only apply event function to scrubbed data, thus avoiding circular reference
-      ;; in following condition that emits :known-event event with scrubbed data
+      ;; only apply event function to polished data, thus avoiding circular reference
+      ;; in following condition that emits :known-event event with polished data
       (and (not-empty matched-events) (or emitting-known-event-id?
                                           emitting-unknown-event-id?))
       (run! #(apply-event polished-data %) matched-events)
-      ;; when non-empty matched events, emit :known-event event with scrubbed data
-      ;; and apply event function to scrubbed data
+      ;; when non-empty matched events, emit :known-event event with polished data
+      ;; and apply event function to polished data
       (not-empty matched-events)
       (do (emit :known-event polished-data)
           (run! #(apply-event polished-data %) matched-events))
-      ;; when empty matched events, emit :unknown-event event with scrubbed data
+      ;; when empty matched events, emit :unknown-event event with polished data
       :else (emit :unknown-event polished-data))))
 
 (comment
