@@ -44,8 +44,8 @@
   (try
     (apply-event-function data)
     (catch Exception exception
-      (emit :event-exception {:data data
-                              :exception exception}))))
+      (emit :yaaaalab.event.event-exception {:yaaaalab.event.data data
+                                             :yaaaalab.event.exception exception}))))
 
 (defn ->data-w-ids
   [id data]
@@ -59,8 +59,8 @@
 (defn emit
   [id data]
   (let [matched-events (filter #(= id (:yaaaalab.event.id %)) (->events))
-        emitting-known-event-id? (= id :known-event)
-        emitting-unknown-event-id? (= id :unknown-event)
+        emitting-known-event-id? (= id :yaaaalab.event.known-event)
+        emitting-unknown-event-id? (= id :yaaaalab.event.unknown-event)
         data-w-ids (->data-w-ids id data)]
     (cond
       ;; when non-empty matched event's id is either :known-event or :unknown-event,
@@ -72,10 +72,10 @@
       ;; when non-empty matched events, emit :known-event event with data
       ;; and apply event function to data
       (not-empty matched-events)
-      (do (emit :known-event data-w-ids)
+      (do (emit :yaaaalab.event.known-event data-w-ids)
           (run! #(apply-event data-w-ids %) matched-events))
       ;; when empty matched events, emit :unknown-event event with data
-      :else (emit :unknown-event data-w-ids))))
+      :else (emit :yaaaalab.event.unknown-event data-w-ids))))
 
 (comment
 
