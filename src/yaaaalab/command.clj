@@ -43,7 +43,7 @@
 
 (defn command-prefix-pattern
   []
-  (re-pattern (str "^" (:prefix (->config)))))
+  (re-pattern (str "^" (:yaaaalab.bot.prefix (->config)))))
 
 (defn ->command-message-pattern-match
   [{:keys [text] :as _message}

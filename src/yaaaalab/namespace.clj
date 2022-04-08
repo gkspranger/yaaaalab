@@ -12,11 +12,11 @@
 (defn filter-namespaces
   [filter-pattern namespaces]
   (let [matched-namespaces (filter #(re-matches filter-pattern (str %))
-                                       namespaces)
+                                   namespaces)
         matched-namespaces-wo-tests (->> matched-namespaces
                                          (remove #(re-matches #".*\.test\..*" (str %)))
                                          (remove #(re-matches #".*-test$" (str %))))]
-    (if (:include-examples (->config))
+    (if (:yaaaalab.examples.include? (->config))
       matched-namespaces
       matched-namespaces-wo-tests)))
 

@@ -5,7 +5,7 @@
 (defn ->command-descriptions-by-group
   []
   (reduce #(let [group-name (name (:group %2))
-                 command-description (str (:prefix (->config))
+                 command-description (str (:yaaaalab.bot.prefix (->config))
                                           (:description %2))]
              (assoc %1 group-name (sort (conj (%1 group-name)
                                               command-description))))

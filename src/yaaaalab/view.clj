@@ -9,7 +9,7 @@
 
 (defn ->view
   [view]
-  (let [adapter-view (keyword (str (symbol view) "/" (symbol (:adapter (->config)))))
+  (let [adapter-view (keyword (str (symbol view) "/" (symbol (:yaaaalab.adapter.id (->config)))))
         default-view (keyword (str (symbol view) "/default"))]
     (cond
       (adapter-view @views) (adapter-view @views)

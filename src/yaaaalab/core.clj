@@ -19,7 +19,7 @@
 
 (defn set-log-level
   []
-  (let [log-level (:log-level (->config))
+  (let [log-level (:yaaaalab.logging.level (->config))
         log-config (assoc default-config :min-level log-level)]
     (set-config! log-config)))
 
@@ -32,6 +32,6 @@
   (load-events)
   (load-listeners)
   (load-views)
-  (let [adapter (:adapter (->config))
+  (let [adapter (:yaaaalab.adapter.id (->config))
         apply-adapter-function (:function (->adapter adapter))]
     (apply-adapter-function message-handlers)))

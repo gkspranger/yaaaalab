@@ -39,8 +39,8 @@
 (declare emit)
 
 (defn apply-event
-  [data
-   {apply-event-function :yaaaalab.event.function :as _matched-event}]
+  [{apply-event-function :yaaaalab.event.function :as _matched-event}
+   data]
   (try
     (apply-event-function data)
     (catch Exception exception
@@ -68,12 +68,12 @@
       ;; in following condition that emits :known-event event with data
       (and (not-empty matched-events) (or emitting-known-event-id?
                                           emitting-unknown-event-id?))
-      (run! #(apply-event data-w-ids %) matched-events)
+      (run! #(apply-event % data-w-ids) matched-events)
       ;; when non-empty matched events, emit :known-event event with data
       ;; and apply event function to data
       (not-empty matched-events)
       (do (emit :yaaaalab.event.known-event data-w-ids)
-          (run! #(apply-event data-w-ids %) matched-events))
+          (run! #(apply-event % data-w-ids) matched-events))
       ;; when empty matched events, emit :unknown-event event with data
       :else (emit :yaaaalab.event.unknown-event data-w-ids))))
 

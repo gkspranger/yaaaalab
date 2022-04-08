@@ -15,10 +15,10 @@
                                  :default "!"}})
   (cfg/populate-from-env)
   (cfg/verify)
-  (reset! configs {:adapter (keyword (cfg/get :yaaaalab-adapter))
-                   :include-examples (cfg/get :yaaaalab-include-examples)
-                   :log-level (keyword (cfg/get :yaaaalab-log-level))
-                   :prefix (cfg/get :yaaaalab-prefix)}))
+  (reset! configs {:yaaaalab.adapter.id (keyword (cfg/get :yaaaalab-adapter))
+                   :yaaaalab.examples.include? (cfg/get :yaaaalab-include-examples)
+                   :yaaaalab.logging.level (keyword (cfg/get :yaaaalab-log-level))
+                   :yaaaalab.bot.prefix (cfg/get :yaaaalab-prefix)}))
 
 (defn ->config
   []
