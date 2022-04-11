@@ -3,8 +3,6 @@
 
 (defn non-empty-message
   {:listener? true
-   :pattern #"(.*)"}
-  [{text :text :as message}]
-  (when-not (empty? text)
-    (debug (str "message received: "
-                (select-keys message [:channel :source :text :user])))))
+   :pattern #"(.+)"}
+  [message]
+  (debug (str "message received: " message)))

@@ -55,15 +55,20 @@
     apply-listener-function :function :as _matched-listener}]
   (let [message-w-match (assoc message :match match)]
     (try
-      (emit :known-listener message-w-match)
+      (emit :yaaaalab.event.known-listener message-w-match)
       (apply-listener-function message-w-match)
       (catch Exception exception
-        (emit :listener-exception {:message message-w-match
-                                   :exception exception})))))
+        (emit :yaaaalab.event.listener-exception {:message message-w-match
+                                                  :exception exception})))))
 
 (defn evaluate-message
   [message]
-  (run! #(apply-listener message %) (filter-matched-listeners message)))
+  (let [matched-listeners (filter-matched-listeners message)
+        no-matching-listeners? (and (coll? matched-listeners)
+                                    (empty? matched-listeners))]
+    (if no-matching-listeners?
+      (emit :yaaaalab.event.no-matching-listeners message)
+      (run! #(apply-listener message %) (filter-matched-listeners message)))))
 
 (comment
 
