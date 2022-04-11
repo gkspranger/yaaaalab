@@ -66,11 +66,11 @@
     apply-command-function :function :as _matched-command}]
   (let [message-w-match (assoc message :match match)]
     (try
-      (emit :known-command message-w-match)
+      (emit :yaaaalab.event.known-command message-w-match)
       (apply-command-function message-w-match)
       (catch Exception exception
-        (emit :command-exception {:message message-w-match
-                                  :exception exception})))))
+        (emit :yaaaalab.event.command-exception {:message message-w-match
+                                                 :exception exception})))))
 
 (defn evaluate-message
   [message]
@@ -78,7 +78,7 @@
         unknown-command? (and (coll? matched-commands)
                               (empty? matched-commands))]
     (if unknown-command?
-      (emit :unknown-command message)
+      (emit :yaaaalab.event.unknown-command message)
       (run! #(apply-command message %) matched-commands))))
 
 (comment
