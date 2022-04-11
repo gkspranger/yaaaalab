@@ -72,7 +72,7 @@
         (emit :yaaaalab.event.command-exception {:message message-w-match
                                                  :exception exception})))))
 
-(defn evaluate-message
+(defn evaluate-message-and-apply-matched-commands
   [message]
   (let [matched-commands (filter-matched-commands message)
         unknown-command? (and (coll? matched-commands)

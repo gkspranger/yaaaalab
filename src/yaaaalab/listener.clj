@@ -61,7 +61,7 @@
         (emit :yaaaalab.event.listener-exception {:message message-w-match
                                                   :exception exception})))))
 
-(defn evaluate-message
+(defn evaluate-message-and-apply-matched-listeners
   [message]
   (let [matched-listeners (filter-matched-listeners message)
         no-matching-listeners? (and (coll? matched-listeners)

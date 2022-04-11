@@ -10,8 +10,8 @@
 
 (def message-handlers
   {:message-evaluator (fn [message]
-                        (cmd/evaluate-message message)
-                        (lsnr/evaluate-message message))
+                        (cmd/evaluate-message-and-apply-matched-commands message)
+                        (lsnr/evaluate-message-and-apply-matched-listeners message))
    :event-emitter emit
    :view-renderer render})
 
