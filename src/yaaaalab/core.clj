@@ -1,10 +1,9 @@
 (ns yaaaalab.core
   (:require [yaaaalab.adapter :refer [->adapter load-adapters]]
-            [yaaaalab.command :refer [load-commands]]
+            [yaaaalab.command :refer [load-commands] :as cmd]
             [yaaaalab.event :refer [emit load-events]]
             [yaaaalab.listener :refer [load-listeners]]
-            [yaaaalab.handler :refer [evaluate-message-for-commands
-                                      evaluate-message-for-listeners]]
+            [yaaaalab.handler :refer [evaluate-message-for-listeners]]
             [yaaaalab.view :refer [load-views render]]
             [yaaaalab.config :refer [->config load-configs]]
             [taoensso.timbre :refer [default-config set-config!]])
@@ -12,7 +11,7 @@
 
 (def message-handlers
   {:message-evaluator (fn [message]
-                        (evaluate-message-for-commands message)
+                        (cmd/evaluate-message message)
                         (evaluate-message-for-listeners message))
    :event-emitter emit
    :view-renderer render})

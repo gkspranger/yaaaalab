@@ -26,15 +26,6 @@
         (emit handler-exception {:message message-w-match
                                  :exception exception})))))
 
-(defn evaluate-message-for-commands
-  [message]
-  (let [matched-commands (filter-matched-commands message)
-        unknown-command? (and (coll? matched-commands)
-                              (empty? matched-commands))]
-    (if unknown-command?
-      (emit :unknown-command message)
-      (run! #(apply-handler message %) matched-commands))))
-
 (defn evaluate-message-for-listeners
   [message]
   (run! #(apply-handler message %) (filter-matched-listeners message)))
