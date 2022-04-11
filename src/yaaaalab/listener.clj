@@ -1,5 +1,6 @@
 (ns yaaaalab.listener
-  (:require [yaaaalab.namespace
+  (:require [yaaaalab.event :refer [emit]]
+            [yaaaalab.namespace
              :refer [all-namespaces filter-namespaces
                      filter-namespace-mappings load-namespaces]]))
 
@@ -47,6 +48,22 @@
   (->> (->listeners)
        (map #(->listener-message-pattern-match message %))
        (remove empty?)))
+
+(defn apply-listener
+  [message
+   {match :match
+    apply-listener-function :function :as _matched-listener}]
+  (let [message-w-match (assoc message :match match)]
+    (try
+      (emit :known-listener message-w-match)
+      (apply-listener-function message-w-match)
+      (catch Exception exception
+        (emit :listener-exception {:message message-w-match
+                                   :exception exception})))))
+
+(defn evaluate-message
+  [message]
+  (run! #(apply-listener message %) (filter-matched-listeners message)))
 
 (comment
 
