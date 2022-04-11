@@ -48,17 +48,17 @@
 (defn apply-view
   [data apply-view-function]
   (try
-    (emit :known-view data)
+    (emit :yaaaalab.event.known-view data)
     (apply-view-function data)
     (catch Exception exception
-      (emit :view-exception {:data data
-                             :exception exception}))))
+      (emit :yaaaalab.event.view-exception {:data data
+                                            :exception exception}))))
 
 (defn render
   [id data]
   (if-let [view (->view id)]
     (apply-view data view)
-    (emit :unknown-view data)))
+    (emit :yaaaalab.event.unknown-view data)))
 
 (comment
 
