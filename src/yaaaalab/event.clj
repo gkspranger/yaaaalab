@@ -63,18 +63,19 @@
         emitting-unknown-event-id? (= id :yaaaalab.event.unknown-event)
         data-w-ids (->data-w-ids id data)]
     (cond
-      ;; when non-empty matched event's id is either :known-event or :unknown-event,
-      ;; only apply event function to data, thus avoiding circular reference
-      ;; in following condition that emits :known-event event with data
+      ;; when non-empty matched event's id is either :yaaaalab.event.known-event
+      ;; or :yaaaalab.event.unknown-event, only apply event function to data,
+      ;; thus avoiding circular reference in following condition that emits
+      ;; :yaaaalab.event.known-event event with data
       (and (not-empty matched-events) (or emitting-known-event-id?
                                           emitting-unknown-event-id?))
       (run! #(apply-event % data-w-ids) matched-events)
-      ;; when non-empty matched events, emit :known-event event with data
-      ;; and apply event function to data
+      ;; when non-empty matched events, emit :yaaaalab.event.known-event event
+      ;; with data and apply event function to data
       (not-empty matched-events)
       (do (emit :yaaaalab.event.known-event data-w-ids)
           (run! #(apply-event % data-w-ids) matched-events))
-      ;; when empty matched events, emit :unknown-event event with data
+      ;; when empty matched events, emit :yaaaalab.event.unknown-event event with data
       :else (emit :yaaaalab.event.unknown-event data-w-ids))))
 
 (comment

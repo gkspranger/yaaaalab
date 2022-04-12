@@ -7,13 +7,17 @@
 
 (def views (atom {}))
 
+(defn ->views
+  []
+  @views)
+
 (defn ->view
   [view]
   (let [adapter-view (keyword (str (symbol view) "/" (symbol (:yaaaalab.adapter.id (->config)))))
         default-view (keyword (str (symbol view) "/default"))]
     (cond
-      (adapter-view @views) (adapter-view @views)
-      (default-view @views) (default-view @views))))
+      (adapter-view (->views)) (adapter-view (->views))
+      (default-view (->views)) (default-view (->views)))))
 
 (defn ->view-namespaces
   [namespaces]
