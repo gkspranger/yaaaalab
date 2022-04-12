@@ -22,4 +22,4 @@
     send :message-sender
     render :view-renderer :as _message}]
   (send channel (str "Hi, " user "!"))
-  (reply (render :help {:items (->command-descriptions-by-group)})))
+  (reply (render :yaaaalab.view.help {:items (->command-descriptions-by-group)})))

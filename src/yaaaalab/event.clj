@@ -52,7 +52,8 @@
   (let [parent-event-id (:yaaaalab.event.id (meta data))]
     (with-meta
       data
-      (merge {:yaaaalab.event.id id}
+      (merge (meta data)
+             {:yaaaalab.event.id id}
              (when parent-event-id
                {:yaaaalab.event.parent.id parent-event-id})))))
 

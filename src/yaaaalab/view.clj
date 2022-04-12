@@ -11,10 +11,15 @@
   []
   @views)
 
+(defn ->adapter-view
+  ([view-id] (->adapter-view view-id :default))
+  ([view-id adapter-id]
+   (keyword (str (symbol view-id) "." (symbol adapter-id)))))
+
 (defn ->view
-  [view]
-  (let [adapter-view (keyword (str (symbol view) "/" (symbol (:yaaaalab.adapter.id (->config)))))
-        default-view (keyword (str (symbol view) "/default"))]
+  [view-id]
+  (let [adapter-view (->adapter-view view-id (:yaaaalab.adapter.id (->config)))
+        default-view (->adapter-view view-id)]
     (cond
       (adapter-view (->views)) (adapter-view (->views))
       (default-view (->views)) (default-view (->views)))))
@@ -25,16 +30,16 @@
 
 (defn view?
   [mapping]
-  (if (:view? (meta mapping))
+  (if (:yaaaalab.view.view? (meta mapping))
     true
     false))
 
 (defn load-view
   [view]
   (let [view-meta (meta view)
-        view-key (keyword (str (symbol (:id view-meta))
-                               "/"
-                               (symbol (:adapter view-meta))))]
+        view-id (:yaaaalab.view.id view-meta)
+        adapter-id (:yaaaalab.view.adapter.id view-meta)
+        view-key (->adapter-view view-id adapter-id)]
     (swap! views assoc view-key view)))
 
 (def ->namespace-view-mappings (partial filter-namespace-mappings
@@ -58,11 +63,19 @@
       (emit :yaaaalab.event.view-exception {:data data
                                             :exception exception}))))
 
+(defn ->data-w-id
+  [id data]
+  (with-meta
+    data
+    (merge (meta data)
+           {:yaaaalab.view.id id})))
+
 (defn render
   [id data]
-  (if-let [view (->view id)]
-    (apply-view data view)
-    (emit :yaaaalab.event.unknown-view data)))
+  (let [data-w-id (->data-w-id id data)]
+    (if-let [view (->view id)]
+      (apply-view data-w-id view)
+      (emit :yaaaalab.event.unknown-view data-w-id))))
 
 (comment
 
