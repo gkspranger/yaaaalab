@@ -5,7 +5,7 @@
   {:yaaaalab.event.event? true
    :yaaaalab.event.id :yaaaalab.event.known-command}
   [message]
-  (debug (str "known command invoked: " message)))
+  (debug (str "known command (" (:yaaaalab.command.id (meta message)) ") invoked: " message)))
 
 (defn on-unknown-command
   {:yaaaalab.event.event? true
@@ -17,5 +17,5 @@
   {:yaaaalab.event.event? true
    :yaaaalab.event.id :yaaaalab.event.command-exception}
   [{:keys [exception message] :as _command-message-exception}]
-  (error (str "command exception thrown: " message))
+  (error (str "command (" (:yaaaalab.command.id (meta message)) ") exception thrown: " message))
   (error exception))

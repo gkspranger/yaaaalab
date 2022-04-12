@@ -18,17 +18,21 @@
 
 (defn command?
   [mapping]
-  (if (:command? (meta mapping))
+  (if (:yaaaalab.command.command? (meta mapping))
     true
     false))
 
 (defn load-command
   [command]
-  (let [command-meta (meta command)]
-    (swap! commands conj {:pattern (:pattern command-meta)
-                          :description (:doc command-meta)
-                          :group (:group command-meta)
-                          :function command})))
+  (let [{pattern :yaaaalab.command.pattern
+         description :doc
+         group :yaaaalab.command.group
+         id :yaaaalab.command.id} (meta command)]
+    (swap! commands conj {:yaaaalab.command.pattern pattern
+                          :yaaaalab.command.description description
+                          :yaaaalab.command.group group
+                          :yaaaalab.command.id id
+                          :yaaaalab.command.function command})))
 
 (def ->namespace-command-mappings (partial filter-namespace-mappings
                                            command?))
@@ -48,7 +52,7 @@
 
 (defn ->command-message-pattern-match
   [{:keys [text] :as _message}
-   {:keys [pattern] :as command}]
+   {pattern :yaaaalab.command.pattern :as command}]
   (when-let [match (re-find pattern
                             (string/replace text (command-prefix-pattern) ""))]
     (assoc command :match match)))
@@ -60,16 +64,25 @@
          (map #(->command-message-pattern-match message %))
          (remove empty?))))
 
+(defn ->message-w-id
+  [id message]
+  (with-meta
+    message
+    (merge (meta message)
+           {:yaaaalab.command.id id})))
+
 (defn apply-command
   [message
    {match :match
-    apply-command-function :function :as _matched-command}]
-  (let [message-w-match (assoc message :match match)]
+    command-id :yaaaalab.command.id
+    apply-command-function :yaaaalab.command.function :as _matched-command}]
+  (let [message-w-match (assoc message :match match)
+        message-w-id (->message-w-id command-id message-w-match)]
     (try
-      (emit :yaaaalab.event.known-command message-w-match)
-      (apply-command-function message-w-match)
+      (emit :yaaaalab.event.known-command message-w-id)
+      (apply-command-function message-w-id)
       (catch Exception exception
-        (emit :yaaaalab.event.command-exception {:message message-w-match
+        (emit :yaaaalab.event.command-exception {:message message-w-id
                                                  :exception exception})))))
 
 (defn evaluate-message-and-apply-matched-commands

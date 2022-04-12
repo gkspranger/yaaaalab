@@ -4,9 +4,9 @@
 
 (defn ->command-descriptions-by-group
   []
-  (reduce #(let [group-name (name (:group %2))
+  (reduce #(let [group-name (name (:yaaaalab.command.group %2))
                  command-description (str (:yaaaalab.bot.prefix (->config))
-                                          (:description %2))]
+                                          (:yaaaalab.command.description %2))]
              (assoc %1 group-name (sort (conj (%1 group-name)
                                               command-description))))
           {}
@@ -14,9 +14,10 @@
 
 (defn help
   "help - list all available commands"
-  {:command? true
-   :group :help
-   :pattern #"^help$"}
+  {:yaaaalab.command.command? true
+   :yaaaalab.command.group :help
+   :yaaaalab.command.id :yaaaalab.command.help
+   :yaaaalab.command.pattern #"^help$"}
   [{:keys [channel user]
     reply :message-responder
     send :message-sender
