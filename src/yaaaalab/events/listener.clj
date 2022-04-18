@@ -5,7 +5,7 @@
   {:yaaaalab.event.event? true
    :yaaaalab.event.id :yaaaalab.event.known-listener}
   [message]
-  (debug (str "known listener invoked: " message)))
+  (debug (str "known listener (" (:yaaaalab.listener.id (meta message)) ") invoked: " message)))
 
 (defn on-no-matching-listeners
   {:yaaaalab.event.event? true
@@ -17,5 +17,5 @@
   {:yaaaalab.event.event? true
    :yaaaalab.event.id :yaaaalab.event.listener-exception}
   [{:keys [exception message] :as _listener-message-exception}]
-  (error (str "listener exception thrown: " message))
+  (error (str "listener (" (:yaaaalab.listener.id (meta message)) ") exception thrown: " message))
   (error exception))
